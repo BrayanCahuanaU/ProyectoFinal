@@ -42,4 +42,19 @@
         android:backgroundTint="@color/black"
         android:layout_marginTop="40dp"/>
 
+    <Button
+        android:id="@+id/btnNewPost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Crear Post"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPosts"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp"
+        tools:listitem="@layout/item_post" />
+
+
 </LinearLayout>
