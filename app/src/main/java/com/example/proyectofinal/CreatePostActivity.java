@@ -4,7 +4,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.*;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,9 +33,11 @@ public class CreatePostActivity extends AppCompatActivity {
     private EditText etTitle, etDescription, etPrice, etSchedules;
     private Spinner spinnerCategory;
     private LinearLayout layoutLocations;
+    private ProgressBar progressBar;
 
     private List<Uri> imageUris = new ArrayList<>();
     private List<ParseFile> parseFiles = new ArrayList<>();
+    private Post postToEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,55 +53,72 @@ public class CreatePostActivity extends AppCompatActivity {
         etSchedules     = findViewById(R.id.etSchedules);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         layoutLocations = findViewById(R.id.layoutLocations);
+        progressBar     = findViewById(R.id.progressBar);
 
-
-        String editId = getIntent().getStringExtra("editPostId");
-        if (editId != null) {
-            // Carga el post y rellena campos:
-            ParseQuery<Post> q = ParseQuery.getQuery(Post.class);
-            q.getInBackground(editId, (post, e) -> {
-                if (e == null) {
-                    etTitle.setText(post.getTitle());
-                    etDescription.setText(post.getDescription());
-                    etPrice.setText(String.valueOf(post.getPrice()));
-                    // … horarios, categoría, ubicaciones, rating oculto …
-                    parseFiles = post.getImages();  // si quieres mostrarlas
-                    // Cuando salves, guarda sobre este mismo objeto `post`
-                }
-            });
-        }
-
-        // Spinner: categorías (ejemplo estático)
+        // Spinner categorías
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item,
-                new String[]{"Comida", "Tecnología", "Arte", "Otro"});
+                new String[]{"Comida", "Tecnología", "Arte", "Otro"}
+        );
         catAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(catAdapter);
 
-        // Ubicaciones dinámicas (ejemplo)
+        // Ubicaciones dinámicas
         for (String loc : new String[]{"Arequipa", "Lima", "Cusco"}) {
             CheckBox cb = new CheckBox(this);
             cb.setText(loc);
             layoutLocations.addView(cb);
         }
 
-        btnPickImages.setOnClickListener(v ->
-                pickImagesFromGallery()
-        );
+        // Modo edición
+        String editId = getIntent().getStringExtra("editPostId");
+        if (editId != null) {
+            progressBar.setVisibility(View.VISIBLE);
+            ParseQuery<Post> q = ParseQuery.getQuery(Post.class);
+            q.getInBackground(editId, (post, e) -> {
+                progressBar.setVisibility(View.GONE);
+                if (e == null) {
+                    postToEdit = post;
+                    populateForEdit(post);
+                } else {
+                    Toast.makeText(this, "Error cargando post: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            });
+        }
 
-        btnSave.setOnClickListener(v ->
-                savePost()
-        );
+        btnPickImages.setOnClickListener(v -> pickImagesFromGallery());
+        btnSave.setOnClickListener(v -> savePost());
+    }
+
+    private void populateForEdit(Post post) {
+        etTitle.setText(post.getTitle());
+        etDescription.setText(post.getDescription());
+        etPrice.setText(String.valueOf(post.getPrice()));
+        etSchedules.setText(String.join(",", post.getSchedules()));
+
+        // Categoría
+        String category = post.getCategory();
+        int pos = ((ArrayAdapter<String>) spinnerCategory.getAdapter()).getPosition(category);
+        if (pos >= 0) spinnerCategory.setSelection(pos);
+
+        // Ubicaciones seleccionadas
+        List<String> locs = post.getLocations();
+        for (int i = 0; i < layoutLocations.getChildCount(); i++) {
+            CheckBox cb = (CheckBox) layoutLocations.getChildAt(i);
+            cb.setChecked(locs.contains(cb.getText().toString()));
+        }
+
+        // Imágenes existentes
+        List<ParseFile> imgs = post.getImages();
+        if (imgs != null) parseFiles.addAll(imgs);
     }
 
     private void pickImagesFromGallery() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        startActivityForResult(
-                Intent.createChooser(intent, "Selecciona imágenes"),
-                PICK_IMAGES_REQUEST
-        );
+        startActivityForResult(Intent.createChooser(intent, "Selecciona imágenes"), PICK_IMAGES_REQUEST);
     }
 
     @Override
@@ -111,48 +139,52 @@ public class CreatePostActivity extends AppCompatActivity {
     }
 
     private void savePost() {
-        // Validaciones mínimas
         if (etTitle.getText().toString().isEmpty()) {
             etTitle.setError("Título requerido");
             return;
         }
-        // Convertir URIs a ParseFile
-        parseFiles.clear();
-        for (Uri uri : imageUris) {
-            try (InputStream is = getContentResolver().openInputStream(uri)) {
-                byte[] bytes = new byte[is.available()];
-                is.read(bytes);
-                parseFiles.add(new ParseFile("image.jpg", bytes));
-            } catch (Exception ex) {
-                ex.printStackTrace();
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Nuevas imágenes
+        if (!imageUris.isEmpty()) {
+            parseFiles.clear();
+            for (Uri uri : imageUris) {
+                try (InputStream is = getContentResolver().openInputStream(uri)) {
+                    byte[] bytes = new byte[is.available()];
+                    is.read(bytes);
+                    parseFiles.add(new ParseFile("image.jpg", bytes));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
 
-        // Crear objeto Post
-        Post post = new Post();
-        post.setUser(ParseUser.getCurrentUser());
+        // Crear o editar
+        Post post = postToEdit != null ? postToEdit : new Post();
+        if (postToEdit == null) {
+            post.setUser(ParseUser.getCurrentUser());
+            post.setRating(0);
+        }
         post.setImages(parseFiles);
         post.setTitle(etTitle.getText().toString());
         post.setDescription(etDescription.getText().toString());
         post.setPrice(Double.parseDouble(etPrice.getText().toString()));
-        // Horarios como lista separada por comas
-        List<String> schedules = List.of(etSchedules.getText().toString().split("\\s*,\\s*"));
-        post.setSchedules(schedules);
+        post.setSchedules(List.of(etSchedules.getText().toString().split("\\s*,\\s*")));
         post.setCategory(spinnerCategory.getSelectedItem().toString());
-        // Ubicaciones seleccionadas
+
         List<String> locs = new ArrayList<>();
         for (int i = 0; i < layoutLocations.getChildCount(); i++) {
             CheckBox cb = (CheckBox) layoutLocations.getChildAt(i);
             if (cb.isChecked()) locs.add(cb.getText().toString());
         }
         post.setLocations(locs);
-        post.setRating(0); // inicial
 
-        // Guardar en Parse
         post.saveInBackground((SaveCallback) e -> {
+            progressBar.setVisibility(View.GONE);
             if (e == null) {
-                Toast.makeText(this, "Post creado", Toast.LENGTH_SHORT).show();
-                finish();  // vuelve a la lista de posts
+                String msg = postToEdit != null ? "Post actualizado" : "Post creado";
+                Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+                finish();
             } else {
                 Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }

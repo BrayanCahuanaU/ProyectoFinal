@@ -60,6 +60,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"/>
+
+
         <!-- Botón de guardar -->
         <Button
             android:id="@+id/btnSavePost"

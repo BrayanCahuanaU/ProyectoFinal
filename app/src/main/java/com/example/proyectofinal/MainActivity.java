@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         );
 
         TextView tvWelcome = findViewById(R.id.tvWelcome);
-        TextView tvUserInfo = findViewById(R.id.tvUserInfo);
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
@@ -82,10 +81,6 @@ public class MainActivity extends AppCompatActivity {
             String welcomeText = "¡Bienvenido, " + currentUser.getUsername() + "!";
             tvWelcome.setText(welcomeText);
 
-            // Mostrar información adicional
-            String userInfo = "Email: " + currentUser.getEmail() + "\n"
-                    + "Fecha de creación: " + currentUser.getCreatedAt();
-            tvUserInfo.setText(userInfo);
         } else {
             // Si no hay usuario, volver al login
             goToLoginActivity();
