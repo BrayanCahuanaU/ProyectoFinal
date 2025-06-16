@@ -98,4 +98,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, HomeActivity.class));
         finish();
     }
+    private void goToFeed() {
+        startActivity(new Intent(this, FeedActivity.class));
+        finish();
+    }
 }

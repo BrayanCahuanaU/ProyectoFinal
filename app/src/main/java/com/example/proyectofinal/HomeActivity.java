@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -44,14 +46,21 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    private void saveUserPost(String content) {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if(user != null) {
-            Post post = new Post(content);
+    private void createPost(String title, String content, double price, double rating, String imageUrl) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            Post post = new Post(title, content, price, rating, imageUrl, user.getUid());
+
             db.collection("users")
                     .document(user.getUid())
                     .collection("posts")
-                    .add(post);
+                    .add(post)
+                    .addOnSuccessListener(documentReference -> {
+                        Toast.makeText(this, "Post creado exitosamente", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Error al crear post", Toast.LENGTH_SHORT).show();
+                    });
         }
     }
 }
