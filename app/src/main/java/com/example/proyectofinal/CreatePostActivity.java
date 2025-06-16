@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -41,6 +42,23 @@ public class CreatePostActivity extends AppCompatActivity {
         etSchedules     = findViewById(R.id.etSchedules);
         spinnerCategory = findViewById(R.id.spinnerCategory);
         layoutLocations = findViewById(R.id.layoutLocations);
+
+
+        String editId = getIntent().getStringExtra("editPostId");
+        if (editId != null) {
+            // Carga el post y rellena campos:
+            ParseQuery<Post> q = ParseQuery.getQuery(Post.class);
+            q.getInBackground(editId, (post, e) -> {
+                if (e == null) {
+                    etTitle.setText(post.getTitle());
+                    etDescription.setText(post.getDescription());
+                    etPrice.setText(String.valueOf(post.getPrice()));
+                    // … horarios, categoría, ubicaciones, rating oculto …
+                    parseFiles = post.getImages();  // si quieres mostrarlas
+                    // Cuando salves, guarda sobre este mismo objeto `post`
+                }
+            });
+        }
 
         // Spinner: categorías (ejemplo estático)
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(

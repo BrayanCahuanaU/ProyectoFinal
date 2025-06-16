@@ -18,10 +18,12 @@ import java.util.List;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private final Context context;
     private final List<Post> posts;
+    private final boolean isEditable;
 
-    public PostAdapter(Context ctx, List<Post> list) {
+    public PostAdapter(Context ctx, List<Post> list, boolean editable) {
         context = ctx;
         posts = list;
+        isEditable = editable;
     }
 
     @NonNull @Override
@@ -44,12 +46,27 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             Glide.with(context).load(imgs.get(0).getUrl()).into(h.ivThumb);
         }
 
-        // CLICK: abrir detalle
+        /*// CLICK: abrir detalle
         h.itemView.setOnClickListener(v -> {
             Intent i = new Intent(context, PostDetailActivity.class);
             i.putExtra("postId", post.getObjectId());
             context.startActivity(i);
+        });*/
+
+        h.itemView.setOnClickListener(v -> {
+            if (isEditable) {
+                // En AccountActivity: edición
+                Intent i = new Intent(context, CreatePostActivity.class);
+                i.putExtra("editPostId", post.getObjectId());
+                context.startActivity(i);
+            } else {
+                // En MainActivity: detalle
+                Intent i = new Intent(context, PostDetailActivity.class);
+                i.putExtra("postId", post.getObjectId());
+                context.startActivity(i);
+            }
         });
+
     }
 
     @Override

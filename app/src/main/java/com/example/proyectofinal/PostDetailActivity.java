@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
+
+import com.bumptech.glide.Glide;
 import com.parse.*;
 
 import java.util.ArrayList;
@@ -16,6 +18,8 @@ public class PostDetailActivity extends AppCompatActivity {
     private RatingBar ratingBar;
     private Button btnContact;
     private ImageButton btnBack;
+    private TextView tvUser;
+    private ImageView ivUserProfile;
 
 
     @Override
@@ -34,6 +38,8 @@ public class PostDetailActivity extends AppCompatActivity {
         ratingBar    = findViewById(R.id.ratingBarDetail);
         btnContact   = findViewById(R.id.btnContact);
         btnBack = findViewById(R.id.btnBack);
+        tvUser = findViewById(R.id.tvUser);
+        ivUserProfile = findViewById(R.id.ivUserProfile);
 
 
         String postId = getIntent().getStringExtra("postId");
@@ -50,6 +56,8 @@ public class PostDetailActivity extends AppCompatActivity {
 
     private void loadPost(String id) {
         ParseQuery<Post> q = ParseQuery.getQuery(Post.class);
+        q.include("user");
+
         q.getInBackground(id, (post, e) -> {
             if (e == null) {
                 tvTitle.setText(post.getTitle());
@@ -64,6 +72,24 @@ public class PostDetailActivity extends AppCompatActivity {
                 List<String> urls = new ArrayList<>();
                 for (ParseFile pf : post.getImages()) urls.add(pf.getUrl());
                 vpImages.setAdapter(new ImagesPagerAdapter(this, urls));
+
+                // Cargar información del usuario
+                ParseUser user = post.getUser();
+                if (user != null) {
+                    tvUser.setText(user.getUsername());
+
+                    // Cargar foto de perfil si existe
+                    ParseFile profilePic = user.getParseFile("profilePic");
+                    if (profilePic != null) {
+                        Glide.with(this).load(profilePic.getUrl()).into(ivUserProfile);
+                    } else {
+                        // Imagen por defecto si no hay foto
+                        ivUserProfile.setImageResource(R.drawable.ic_launcher_foreground);
+                    }
+                } else {
+                    tvUser.setText("Usuario desconocido");
+                }
+
             } else {
                 Toast.makeText(this, "No se encontró el post", Toast.LENGTH_SHORT).show();
                 finish();

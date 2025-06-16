@@ -32,21 +32,48 @@
         android:textSize="18sp"
         android:textAlignment="center"/>
 
-    <!-- Botón para cerrar sesión -->
-    <Button
-        android:id="@+id/btnLogout"
+    <!-- Botones en la misma fila -->
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Cerrar Sesión"
-        android:textColor="@android:color/white"
-        android:backgroundTint="@color/black"
-        android:layout_marginTop="40dp"/>
+        android:padding="5dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dp">
 
-    <Button
-        android:id="@+id/btnNewPost"
+        <!-- Botón de Mi Cuenta (izquierda) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/cuenta"
+            app:backgroundTint="@color/white"
+            android:layout_margin="10dp"
+            android:textColor="@android:color/white"/>
+
+        <!-- Botón de Nuevo Post (derecha) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnNewPost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="10dp"
+            android:paddingVertical="5dp"
+            app:srcCompat="@drawable/agregar"
+            app:backgroundTint="@color/white"/>
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/svPosts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Crear Post"/>
+        android:queryHint="Buscar posts..."
+        android:iconifiedByDefault="false"
+        android:layout_marginBottom="16dp"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPosts"

@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import androidx.appcompat.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,12 +18,15 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private RecyclerView rvPosts;
     private PostAdapter adapter;
     private List<Post> posts = new ArrayList<>();
+    private SearchView svPosts;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,23 +34,46 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        rvPosts = findViewById(R.id.rvPosts);
-        adapter = new PostAdapter(this, posts);
+        // 1) Views existentes
+        rvPosts    = findViewById(R.id.rvPosts);
+        adapter    = new PostAdapter(this, posts, false);
+        svPosts    = findViewById(R.id.svPosts);
 
         // 2 columnas
         rvPosts.setLayoutManager(new GridLayoutManager(this, 2));
         rvPosts.setAdapter(adapter);
 
-        loadPosts();
+        // 2) Carga inicial
+        loadPosts(null);
 
-        Button btnNewPost = findViewById(R.id.btnNewPost);
+        // 3) Listener de búsqueda
+        svPosts.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                loadPosts(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Búsqueda en tiempo real opcional:
+                loadPosts(newText);
+                return true;
+            }
+        });
+
+        FloatingActionButton btnNewPost = findViewById(R.id.btnNewPost);
         btnNewPost.setOnClickListener(v -> {
             startActivity(new Intent(this, CreatePostActivity.class));
         });
 
+        FloatingActionButton btnAccount = findViewById(R.id.btnAccount);
+        btnAccount.setOnClickListener(v ->
+                startActivity(new Intent(this, AccountActivity.class))
+        );
+
         TextView tvWelcome = findViewById(R.id.tvWelcome);
         TextView tvUserInfo = findViewById(R.id.tvUserInfo);
-        Button btnLogout = findViewById(R.id.btnLogout);
 
         ParseUser currentUser = ParseUser.getCurrentUser();
 
@@ -63,14 +91,6 @@ public class MainActivity extends AppCompatActivity {
             goToLoginActivity();
         }
 
-        // Configurar el botón de cierre de sesión
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ParseUser.logOut();
-                goToLoginActivity();
-            }
-        });
     }
 
     private void goToLoginActivity() {
@@ -80,18 +100,24 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private void loadPosts() {
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        // opcional: solo del usuario actual
-        // query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
-        query.orderByDescending("createdAt");
-        query.findInBackground((list, e) -> {
+    private void loadPosts(@Nullable String query) {
+        ParseQuery<Post> qTitle = ParseQuery.getQuery(Post.class)
+                .whereMatches(Post.KEY_TITLE, "(?i).*" + (query != null ? query : "") + ".*");
+        ParseQuery<Post> qDesc = ParseQuery.getQuery(Post.class)
+                .whereContains(Post.KEY_DESC, query != null ? query : "");
+        ParseQuery<Post> qCat  = ParseQuery.getQuery(Post.class)
+                .whereMatches(Post.KEY_CATEGORY, "(?i).*" + (query != null ? query : "") + ".*");
+
+        List<ParseQuery<Post>> orQueries = Arrays.asList(qTitle, qDesc, qCat);
+        ParseQuery<Post> mainQuery = ParseQuery.or(orQueries);
+        mainQuery.orderByDescending("createdAt");
+        mainQuery.findInBackground((list, e) -> {
             if (e == null) {
                 posts.clear();
                 posts.addAll(list);
                 adapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(this, "Error al cargar posts", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error cargando posts", Toast.LENGTH_SHORT).show();
             }
         });
     }
