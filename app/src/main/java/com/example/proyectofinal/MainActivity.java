@@ -63,8 +63,8 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         goToHome();
                     } else {
-                        Toast.makeText(this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
+                        String error = task.getException() != null ? task.getException().getMessage() : "Error desconocido";
+                        Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();                    }
                 });
     }
 

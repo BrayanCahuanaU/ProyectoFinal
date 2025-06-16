@@ -20,19 +20,23 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        Button logoutBtn = findViewById(R.id.logoutBtn);
-        TextView userEmail = findViewById(R.id.userEmail);
-
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        if(user != null) {
-            userEmail.setText(user.getEmail());
 
-            // Ejemplo: Guardar un post asociado al usuario
-            saveUserPost("Mi primer post");
+        // VERIFICACIÓN PRIMERO: Si no hay usuario, regresar inmediatamente
+        if (user == null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return; // Importante: salir del método
         }
 
+        // Inicializar vistas DESPUÉS de verificar usuario
+        TextView userEmail = findViewById(R.id.userEmail);
+        Button logoutBtn = findViewById(R.id.logoutBtn);
+
+        userEmail.setText(user.getEmail());
+
+        // Configurar botón de logout
         logoutBtn.setOnClickListener(v -> {
             mAuth.signOut();
             startActivity(new Intent(this, MainActivity.class));
