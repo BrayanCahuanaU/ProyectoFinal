@@ -12,17 +12,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class AccountActivity extends AppCompatActivity {
-    private TextView tvUser, tvEmail;
-    private Button btnLogout;
+    private TextView tvUser, tvEmail, tvCreatedAt, tvPostCount;
+    private FloatingActionButton btnAccLogout;
     private RecyclerView rvMyPosts;
     private PostAdapter adapter;
     private List<Post> myPosts = new ArrayList<>();
@@ -32,9 +36,11 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        tvUser    = findViewById(R.id.tvAccUsername);
-        tvEmail   = findViewById(R.id.tvAccEmail);
-        btnLogout = findViewById(R.id.btnAccLogout);
+        tvUser = findViewById(R.id.tvAccUsername);
+        tvEmail = findViewById(R.id.tvAccEmail);
+        tvCreatedAt = findViewById(R.id.tvAccCreatedAt);
+        tvPostCount = findViewById(R.id.tvAccPostCount);
+        btnAccLogout = findViewById(R.id.btnAccLogout);
         rvMyPosts = findViewById(R.id.rvMyPosts);
 
         // Datos de usuario
@@ -42,10 +48,15 @@ public class AccountActivity extends AppCompatActivity {
         if (u != null) {
             tvUser.setText("Usuario: " + u.getUsername());
             tvEmail.setText("Email: " + u.getEmail());
+            // Fecha de creación formateada
+            Date createdAt = u.getCreatedAt();
+            String pattern = "dd/MM/yyyy 'a las' HH:mm";
+            SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.getDefault());
+            tvCreatedAt.setText("Cuenta creada: " + sdf.format(createdAt));
         }
 
         // Cerrar sesión
-        btnLogout.setOnClickListener(v -> {
+        btnAccLogout.setOnClickListener(v -> {
             ParseUser.logOut();
             startActivity(new Intent(this, LoginActivity.class)
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK));

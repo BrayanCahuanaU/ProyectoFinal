@@ -53,7 +53,6 @@
             android:paddingVertical="5dp"
             app:srcCompat="@drawable/agregar"
             app:backgroundTint="@color/white"/>
-
     </RelativeLayout>
 
     <androidx.appcompat.widget.SearchView

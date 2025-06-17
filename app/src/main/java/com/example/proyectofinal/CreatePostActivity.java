@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -28,11 +29,14 @@ import java.util.List;
 
 public class CreatePostActivity extends AppCompatActivity {
     private static final int PICK_IMAGES_REQUEST = 1001;
+    private static final int MAX_IMAGES = 5;
 
-    private Button btnPickImages, btnSave;
+    private Button btnSave;
     private EditText etTitle, etDescription, etPrice, etSchedules;
     private Spinner spinnerCategory;
     private LinearLayout layoutLocations;
+    private LinearLayout btnPickImages;
+    private TextView tvImageCount;
     private ProgressBar progressBar;
 
     private List<Uri> imageUris = new ArrayList<>();
@@ -46,6 +50,7 @@ public class CreatePostActivity extends AppCompatActivity {
 
         // Views
         btnPickImages   = findViewById(R.id.btnPickImages);
+        tvImageCount = findViewById(R.id.tvImageCount);
         btnSave         = findViewById(R.id.btnSavePost);
         etTitle         = findViewById(R.id.etTitle);
         etDescription   = findViewById(R.id.etDescription);
@@ -54,6 +59,9 @@ public class CreatePostActivity extends AppCompatActivity {
         spinnerCategory = findViewById(R.id.spinnerCategory);
         layoutLocations = findViewById(R.id.layoutLocations);
         progressBar     = findViewById(R.id.progressBar);
+
+        // Actualizar texto del botón
+        updateImageButtonText();
 
         // Spinner categorías
         ArrayAdapter<String> catAdapter = new ArrayAdapter<>(
@@ -91,6 +99,11 @@ public class CreatePostActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> savePost());
     }
 
+    private void updateImageButtonText() {
+        int count = imageUris.size();
+        tvImageCount.setText("Seleccionar Imágenes (" + count + "/5)");
+    }
+
     private void populateForEdit(Post post) {
         etTitle.setText(post.getTitle());
         etDescription.setText(post.getDescription());
@@ -126,14 +139,21 @@ public class CreatePostActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGES_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             imageUris.clear();
+
             if (data.getClipData() != null) {
                 int count = data.getClipData().getItemCount();
-                for (int i = 0; i < count; i++) {
+                for (int i = 0; i < Math.min(count, MAX_IMAGES); i++) {
                     imageUris.add(data.getClipData().getItemAt(i).getUri());
+                }
+
+                if (count > MAX_IMAGES) {
+                    Toast.makeText(this, "Máximo " + MAX_IMAGES + " imágenes permitidas", Toast.LENGTH_SHORT).show();
                 }
             } else if (data.getData() != null) {
                 imageUris.add(data.getData());
             }
+
+            updateImageButtonText();
             Toast.makeText(this, imageUris.size() + " imágenes seleccionadas", Toast.LENGTH_SHORT).show();
         }
     }
