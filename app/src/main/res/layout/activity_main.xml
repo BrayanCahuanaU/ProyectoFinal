@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:padding="5dp"
         android:layout_gravity="center"
-        android:layout_marginBottom="20dp">
+        android:layout_marginBottom="10dp">
 
         <!-- Botón de Mi Cuenta (izquierda) -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -41,6 +41,16 @@
             app:backgroundTint="@color/white"
             android:layout_margin="10dp"
             android:textColor="@android:color/white"/>
+
+        <!-- Botón de Mi Cuenta (centro) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btnChats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            app:backgroundTint="@color/white"
+            app:srcCompat="@drawable/chat" />
 
         <!-- Botón de Nuevo Post (derecha) -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton

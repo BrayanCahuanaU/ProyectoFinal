@@ -1,6 +1,7 @@
 // PostDetailActivity.java
 package com.example.proyectofinal;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,8 @@ public class PostDetailActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private TextView tvUser;
     private ImageView ivUserProfile;
+    private Post currentPost;
+    private String postUserId;
 
 
     @Override
@@ -48,10 +51,11 @@ public class PostDetailActivity extends AppCompatActivity {
         // Set back button click listener
         btnBack.setOnClickListener(v -> finish());
 
-        // Aún sin funcionalidad real:
-        btnContact.setOnClickListener(v ->
-                Toast.makeText(this, "Función de chat próximamente", Toast.LENGTH_SHORT).show()
-        );
+        btnContact.setOnClickListener(v -> {
+            if (currentPost != null) {
+                openChat(currentPost);
+            }
+        });
     }
 
     private void loadPost(String id) {
@@ -60,6 +64,8 @@ public class PostDetailActivity extends AppCompatActivity {
 
         q.getInBackground(id, (post, e) -> {
             if (e == null) {
+                currentPost = post;
+
                 tvTitle.setText(post.getTitle());
                 tvDesc.setText(post.getDescription());
                 tvPrice.setText("$ " + post.getPrice());
@@ -77,6 +83,7 @@ public class PostDetailActivity extends AppCompatActivity {
                 ParseUser user = post.getUser();
                 if (user != null) {
                     tvUser.setText(user.getUsername());
+                    postUserId = user.getObjectId(); // Almacenar el ID del usuario
 
                     // Cargar foto de perfil si existe
                     ParseFile profilePic = user.getParseFile("profilePic");
@@ -86,8 +93,11 @@ public class PostDetailActivity extends AppCompatActivity {
                         // Imagen por defecto si no hay foto
                         ivUserProfile.setImageResource(R.drawable.ic_launcher_foreground);
                     }
+
+
                 } else {
                     tvUser.setText("Usuario desconocido");
+                    postUserId = null;
                 }
 
             } else {
@@ -95,5 +105,33 @@ public class PostDetailActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void openChat(Post post) {
+        ParseUser currentUser = ParseUser.getCurrentUser();
+
+        // Verificar si el usuario está autenticado
+        if (currentUser == null) {
+            Toast.makeText(this, "Debes iniciar sesión para contactar", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Usar el ID almacenado en lugar del objeto ParseUser
+        if (postUserId == null || postUserId.isEmpty()) {
+            Toast.makeText(this, "Error: Usuario no disponible", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String currentUserId = currentUser.getObjectId();
+
+        // Comparar IDs de forma segura
+        if (currentUserId.equals(postUserId)) {
+            Toast.makeText(this, "No puedes chatear contigo mismo", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent intent = new Intent(this, ChatActivity.class);
+            intent.putExtra("postId", post.getObjectId());
+            intent.putExtra("receiverId", postUserId);
+            startActivity(intent);
+        }
     }
 }

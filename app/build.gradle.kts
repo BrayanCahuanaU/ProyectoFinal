@@ -50,6 +50,7 @@ dependencies {
     // Añade estas nuevas dependencias
     implementation(libs.glide)
     implementation(libs.recyclerview)
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.github.parse-community.Parse-SDK-Android:bolts-tasks:4.3.0")
     implementation("com.github.parse-community.Parse-SDK-Android:parse:1.26.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

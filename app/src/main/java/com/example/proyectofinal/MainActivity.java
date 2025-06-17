@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.widget.SearchView;
+
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,6 +73,11 @@ public class MainActivity extends AppCompatActivity {
         btnAccount.setOnClickListener(v ->
                 startActivity(new Intent(this, AccountActivity.class))
         );
+
+        ImageButton btnChats = findViewById(R.id.btnChats);
+        btnChats.setOnClickListener(v -> {
+            startActivity(new Intent(this, ChatHistoryActivity.class));
+        });
 
         TextView tvWelcome = findViewById(R.id.tvWelcome);
 
