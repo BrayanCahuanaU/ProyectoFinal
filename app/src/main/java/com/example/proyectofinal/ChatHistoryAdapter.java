@@ -4,6 +4,7 @@ package com.example.proyectofinal;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,7 +60,7 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
     }
 
     static class ChatViewHolder extends RecyclerView.ViewHolder {
-        de.hdodenhof.circleimageview.CircleImageView ivProfile;
+        ImageView ivProfile;
         TextView tvUsername;
         TextView tvLastMessage;
 

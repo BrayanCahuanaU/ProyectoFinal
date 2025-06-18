@@ -46,12 +46,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             Glide.with(context).load(imgs.get(0).getUrl()).into(h.ivThumb);
         }
 
-        /*// CLICK: abrir detalle
-        h.itemView.setOnClickListener(v -> {
-            Intent i = new Intent(context, PostDetailActivity.class);
-            i.putExtra("postId", post.getObjectId());
-            context.startActivity(i);
-        });*/
 
         h.itemView.setOnClickListener(v -> {
             if (isEditable) {

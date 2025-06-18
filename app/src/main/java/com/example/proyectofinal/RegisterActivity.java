@@ -1,5 +1,6 @@
 package com.example.proyectofinal;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,21 +12,24 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.common.util.IOUtils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.parse.ParseACL;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
-import com.parse.ParseException;
+
 import java.io.IOException;
 import java.io.InputStream;
 
 public class RegisterActivity extends AppCompatActivity {
-
     private static final int PICK_IMAGE = 100;
+
     private TextInputEditText etUsername, etEmail, etPassword, etConfirmPassword;
     private ImageView ivProfile;
     private ProgressBar progressBar;
@@ -42,9 +46,10 @@ public class RegisterActivity extends AppCompatActivity {
         etConfirmPassword = findViewById(R.id.etConfirmPassword);
         ivProfile         = findViewById(R.id.ivProfile);
         progressBar       = findViewById(R.id.progressBar);
-        Button btnRegister = findViewById(R.id.btnRegister);
-        TextView tvLogin   = findViewById(R.id.tvLogin);
+        Button btnRegister= findViewById(R.id.btnRegister);
+        TextView tvLogin  = findViewById(R.id.tvLogin);
 
+        //  Selección de imagen del perfil
         ivProfile.setOnClickListener(v -> {
             Intent pick = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -56,9 +61,9 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req == PICK_IMAGE && res == Activity.RESULT_OK && data != null) {
             imageUri = data.getData();
             ivProfile.setImageURI(imageUri);
         }
@@ -70,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString();
         String confirm  = etConfirmPassword.getText().toString();
 
+        // Validaciones
         if (username.isEmpty()) {
             showError(etUsername, "Nombre de usuario requerido");
             return;
@@ -89,67 +95,93 @@ public class RegisterActivity extends AppCompatActivity {
 
         progressBar.setVisibility(View.VISIBLE);
 
+        // Paso 1: registro del usuario (sin imagen)
         ParseUser user = new ParseUser();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
-
         // ACL público
         ParseACL acl = new ParseACL();
         acl.setPublicReadAccess(true);
         acl.setPublicWriteAccess(true);
         user.setACL(acl);
 
-        // Si no hay imagen, registra directamente
-        if (imageUri == null) {
-            signUp(user);
-            return;
-        }
+        user.signUpInBackground(e -> {
+            if (e == null) {
+                // Registro / signup exitoso
+                if (imageUri != null) {
+                    // Paso 2: subir la imagen al usuario autenticado
+                    uploadProfileImage(user);
+                } else {
+                    // Paso 3: no había imagen, mostramos éxito
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            } else {
+                // Falla el registro
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(this,
+                        "Error registrando usuario: " + e.getMessage(),
+                        Toast.LENGTH_LONG).show();
+                Log.e("RegisterActivity", "signup failed", e);
+            }
+        });
+    }
 
-        // Si hay imagen, súbela primero
+    private void uploadProfileImage(ParseUser user) {
         try {
             InputStream is = getContentResolver().openInputStream(imageUri);
             byte[] data = IOUtils.toByteArray(is);
-            ParseFile pic = new ParseFile("profile.jpg", data);
+            ParseFile profilePic = new ParseFile("profile.jpg", data);
 
-            pic.saveInBackground(new SaveCallback() {
+            profilePic.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e1) {
+                    progressBar.setVisibility(View.GONE);
                     if (e1 == null) {
-                        // La imagen ya se subió
-                        user.put("profileImage", pic);
-                        signUp(user);
+                        // Imagen subida, asociarla al usuario
+                        user.put("profileImage", profilePic);
+                        user.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e2) {
+                                if (e2 == null) {
+                                    // Paso 3: todo OK
+                                    Toast.makeText(RegisterActivity.this,
+                                            "¡Registro exitoso con foto de perfil!",
+                                            Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // La imagen subió, pero falló actualizar el user
+                                    Toast.makeText(RegisterActivity.this,
+                                            "Registro OK, pero no se guardó la foto. " +
+                                                    "Pruébalo más tarde desde Ajustes.",
+                                            Toast.LENGTH_LONG).show();
+                                    Log.e("RegisterActivity",
+                                            "user save after image failed", e2);
+                                }
+                                finish();
+                            }
+                        });
                     } else {
-                        progressBar.setVisibility(View.GONE);
+                        // Falló la subida de la imagen
                         Toast.makeText(RegisterActivity.this,
-                                "Error subiendo imagen: " + e1.getMessage(),
+                                "Registro OK, pero fallo subir foto. " +
+                                        "Pruébalo más tarde desde Ajustes.",
                                 Toast.LENGTH_LONG).show();
                         Log.e("RegisterActivity", "file save error", e1);
+                        finish();
                     }
                 }
             });
         } catch (IOException ex) {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(this,
-                    "No se pudo leer la imagen: " + ex.getMessage(),
+                    "Usuario registrado, pero error leyendo imagen. " +
+                            "Pruébalo desde Ajustes.",
                     Toast.LENGTH_LONG).show();
             Log.e("RegisterActivity", "image read error", ex);
+            finish();
         }
-    }
-
-    private void signUp(ParseUser user) {
-        user.signUpInBackground(e -> {
-            progressBar.setVisibility(View.GONE);
-            if (e == null) {
-                Toast.makeText(this, "¡Registro exitoso!", Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                Toast.makeText(this,
-                        "Error: " + e.getMessage(),
-                        Toast.LENGTH_LONG).show();
-                Log.e("RegisterActivity", "signup failed", e);
-            }
-        });
     }
 
     private void showError(TextInputEditText field, String message) {

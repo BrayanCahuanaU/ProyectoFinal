@@ -7,11 +7,11 @@
     android:padding="16dp"
     android:background="?attr/selectableItemBackground">
 
-    <de.hdodenhof.circleimageview.CircleImageView
+    <ImageView
         android:id="@+id/ivProfile"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/agregar"
+        android:src="@drawable/cuenta"
         app:civ_border_width="1dp"
         app:civ_border_color="#E0E0E0"/>
 

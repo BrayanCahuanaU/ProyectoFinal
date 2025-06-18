@@ -22,8 +22,8 @@ public class PostDetailActivity extends AppCompatActivity {
     private ImageView ivUserProfile;
 
     private Post currentPost;
-    private String ownerId;         // aquí guardamos siempre el ID
-    private ParseUser ownerUser;    // y, si queremos, el objeto ParseUser
+    private String ownerId;
+    private ParseUser ownerUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,31 +31,31 @@ public class PostDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post_detail);
 
         // 1) Vincular vistas
-        vpImages     = findViewById(R.id.vpImages);
-        tvTitle      = findViewById(R.id.tvDetailTitle);
-        tvDesc       = findViewById(R.id.tvDetailDesc);
-        tvPrice      = findViewById(R.id.tvDetailPrice);
-        tvSchedules  = findViewById(R.id.tvDetailSchedules);
-        tvCategory   = findViewById(R.id.tvDetailCategory);
-        tvLocations  = findViewById(R.id.tvDetailLocations);
-        ratingBar    = findViewById(R.id.ratingBarDetail);
-        btnContact   = findViewById(R.id.btnContact);
-        btnBack      = findViewById(R.id.btnBack);
-        tvUser       = findViewById(R.id.tvUser);
-        ivUserProfile= findViewById(R.id.ivUserProfile);
+        vpImages      = findViewById(R.id.vpImages);
+        tvTitle       = findViewById(R.id.tvDetailTitle);
+        tvDesc        = findViewById(R.id.tvDetailDesc);
+        tvPrice       = findViewById(R.id.tvDetailPrice);
+        tvSchedules   = findViewById(R.id.tvDetailSchedules);
+        tvCategory    = findViewById(R.id.tvDetailCategory);
+        tvLocations   = findViewById(R.id.tvDetailLocations);
+        ratingBar     = findViewById(R.id.ratingBarDetail);
+        btnContact    = findViewById(R.id.btnContact);
+        btnBack       = findViewById(R.id.btnBack);
+        tvUser        = findViewById(R.id.tvUser);
+        ivUserProfile = findViewById(R.id.ivUserProfile);
 
-        // 2) Cargar el post
+        // Cargar el post
         String postId = getIntent().getStringExtra("postId");
         loadPost(postId);
 
-        // 3) Botones
+        // Botones
         btnBack.setOnClickListener(v -> finish());
         btnContact.setOnClickListener(v -> openChat());
     }
 
     private void loadPost(String id) {
         ParseQuery<Post> q = ParseQuery.getQuery(Post.class);
-        q.include(Post.KEY_USER);  // intentamos traer el puntero
+        q.include(Post.KEY_USER);
         q.getInBackground(id, (post, e) -> {
             if (e != null) {
                 Toast.makeText(this, "No se encontró el post", Toast.LENGTH_SHORT).show();
@@ -64,21 +64,27 @@ public class PostDetailActivity extends AppCompatActivity {
             }
 
             currentPost = post;
-            // ** Rellenar datos del post **
+            // Rellenar datos
             tvTitle.setText(post.getTitle());
-            tvDesc .setText(post.getDescription());
+            tvDesc.setText(post.getDescription());
             tvPrice.setText("$ " + post.getPrice());
             tvSchedules.setText("Horarios: " + String.join(", ", post.getSchedules()));
             tvCategory.setText("Categoría: " + post.getCategory());
             tvLocations.setText("Ubicaciones: " + String.join(", ", post.getLocations()));
             ratingBar.setRating(post.getRating().floatValue());
 
-            // ** Imágenes **
+            // Imágenes del post
             List<String> urls = new ArrayList<>();
-            for (ParseFile pf : post.getImages()) urls.add(pf.getUrl());
+            if (post.getImages() != null) {
+                for (ParseFile pf : post.getImages()) {
+                    if (pf != null && pf.getUrl() != null) {
+                        urls.add(pf.getUrl());
+                    }
+                }
+            }
             vpImages.setAdapter(new ImagesPagerAdapter(this, urls));
 
-            // ** Intentamos usuario “directo” **
+            // Usuario dueño
             ParseUser direct = post.getUser();
             if (direct != null) {
                 // include() funcionó
@@ -86,13 +92,14 @@ public class PostDetailActivity extends AppCompatActivity {
                 ownerId   = direct.getObjectId();
                 fillOwnerInfo(direct);
             } else {
-                // fallback: extraemos puntero y lo fetcheamos
+                // fallback
                 ParseObject ptr = post.getParseObject(Post.KEY_USER);
                 if (ptr != null) {
                     ownerId = ptr.getObjectId();
                     fetchOwnerManually(ownerId);
                 } else {
                     tvUser.setText("Usuario desconocido");
+                    ivUserProfile.setImageResource(R.drawable.cuenta);
                     ownerId = null;
                 }
             }
@@ -101,13 +108,13 @@ public class PostDetailActivity extends AppCompatActivity {
         });
     }
 
-    /** Si el fallback detecta el puntero, trae el usuario completo */
     private void fetchOwnerManually(String ownerId) {
         ParseQuery<ParseUser> uq = ParseUser.getQuery();
         uq.getInBackground(ownerId, (user, err) -> {
             if (err != null) {
                 Log.e("PostDetail", "Error fetch owner", err);
                 tvUser.setText("Usuario desconocido");
+                ivUserProfile.setImageResource(R.drawable.cuenta);
                 return;
             }
             ownerUser = user;
@@ -115,14 +122,18 @@ public class PostDetailActivity extends AppCompatActivity {
         });
     }
 
-    /** Rellena nombre + foto de perfil */
+    /** Rellena nombre + foto de perfil (campo "profileImage") */
     private void fillOwnerInfo(ParseUser user) {
         tvUser.setText(user.getUsername());
-        ParseFile pic = user.getParseFile("profilePic");
-        if (pic != null) {
-            Glide.with(this).load(pic.getUrl()).into(ivUserProfile);
+        ParseFile pic = user.getParseFile("profileImage");
+        if (pic != null && pic.getUrl() != null) {
+            Glide.with(this)
+                    .load(pic.getUrl())
+                    .placeholder(R.drawable.cuenta)
+                    .circleCrop()
+                    .into(ivUserProfile);
         } else {
-            ivUserProfile.setImageResource(R.drawable.ic_launcher_foreground);
+            ivUserProfile.setImageResource(R.drawable.cuenta);
         }
     }
 
@@ -133,7 +144,7 @@ public class PostDetailActivity extends AppCompatActivity {
             return;
         }
         if (ownerId == null) {
-            Toast.makeText(this, "Error: Usuario no disponible", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Usuario no disponible", Toast.LENGTH_SHORT).show();
             return;
         }
         if (ownerId.equals(current.getObjectId())) {
