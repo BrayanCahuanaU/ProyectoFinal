@@ -79,27 +79,8 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, ChatHistoryActivity.class));
         });
 
-        TextView tvWelcome = findViewById(R.id.tvWelcome);
 
         ParseUser currentUser = ParseUser.getCurrentUser();
-
-        if (currentUser != null) {
-            // Mostrar información del usuario
-            String welcomeText = "¡Bienvenido, " + currentUser.getUsername() + "!";
-            tvWelcome.setText(welcomeText);
-
-        } else {
-            // Si no hay usuario, volver al login
-            goToLoginActivity();
-        }
-
-    }
-
-    private void goToLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
     }
 
     private void loadPosts(@Nullable String query) {

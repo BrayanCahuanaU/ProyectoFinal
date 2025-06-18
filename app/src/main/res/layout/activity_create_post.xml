@@ -9,6 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:orientation="vertical">
 
         <!-- Sección de título -->
@@ -44,8 +46,8 @@
             <LinearLayout
                 android:id="@+id/btnPickImages"
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:minHeight="80dp"
+                android:layout_height="120dp"
+                android:minHeight="100dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:gravity="center"
                 android:orientation="vertical"

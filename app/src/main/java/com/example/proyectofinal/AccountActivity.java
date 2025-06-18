@@ -27,6 +27,8 @@ import java.util.Locale;
 public class AccountActivity extends AppCompatActivity {
     private TextView tvUser, tvEmail, tvCreatedAt, tvPostCount;
     private FloatingActionButton btnAccLogout;
+    private FloatingActionButton btnBack; // Agrega esta variable
+
     private RecyclerView rvMyPosts;
     private PostAdapter adapter;
     private List<Post> myPosts = new ArrayList<>();
@@ -41,6 +43,7 @@ public class AccountActivity extends AppCompatActivity {
         tvCreatedAt = findViewById(R.id.tvAccCreatedAt);
         tvPostCount = findViewById(R.id.tvAccPostCount);
         btnAccLogout = findViewById(R.id.btnAccLogout);
+        btnBack = findViewById(R.id.btnBack); // Agrega esta línea
         rvMyPosts = findViewById(R.id.rvMyPosts);
 
         // Datos de usuario
@@ -54,6 +57,14 @@ public class AccountActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.getDefault());
             tvCreatedAt.setText("Cuenta creada: " + sdf.format(createdAt));
         }
+
+        // Volver
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish(); // Cierra esta actividad y regresa a la anterior
+            }
+        });
 
         // Cerrar sesión
         btnAccLogout.setOnClickListener(v -> {
