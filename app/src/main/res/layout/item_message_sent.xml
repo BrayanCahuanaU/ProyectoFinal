@@ -6,26 +6,45 @@
     android:padding="8dp"
     android:gravity="end">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Contenedor principal limitado al 75% del ancho -->
+    <LinearLayout
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/enviado"
-        android:padding="6dp"/>
+        android:layout_weight="0.75"
+        android:background="@color/grey"
+        android:orientation="vertical"
+        android:gravity="end">
 
-    <TextView
-        android:id="@+id/tvMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:maxWidth="280dp"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:textAppearance="?attr/textAppearanceBody2"/>
+        <!-- Contenedor del mensaje con fondo negro -->
+        <TextView
+            android:id="@+id/tvMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewEnd"
+            android:maxWidth="1000dp"
+            android:padding="12dp"
+            android:textColor="@android:color/black"
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:layout_gravity="end"/>
 
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="10sp"
-        android:textColor="#80000000"
-        android:layout_marginTop="4dp"/>
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/enviado"
+            android:maxWidth="10dp"
+            android:maxHeight="10dp"
+            android:scaleType="fitXY"
+            android:layout_gravity="end"/>
+
+
+        <!-- TextView para el tiempo -->
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="#80000000"
+            android:layout_marginTop="4dp"
+            android:layout_gravity="end"/>
+    </LinearLayout>
 </LinearLayout>

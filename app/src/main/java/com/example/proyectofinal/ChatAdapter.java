@@ -1,5 +1,6 @@
 package com.example.proyectofinal;
 
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,11 +43,24 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
+        DisplayMetrics metrics = holder.itemView.getContext().getResources().getDisplayMetrics();
+        int maxWidth = (int) (metrics.widthPixels * 0.75); // 75% del ancho de pantalla
 
         if (holder.getItemViewType() == VIEW_TYPE_SENT) {
-            ((SentMessageViewHolder) holder).bind(message);
+            SentMessageViewHolder sentHolder = (SentMessageViewHolder) holder;
+            sentHolder.tvMessage.setText(message.getContent());
+            sentHolder.tvTime.setText(formatTime(message.getCreatedAt()));
+
+            // Establecer ancho máximo
+            sentHolder.tvMessage.setMaxWidth(maxWidth);
         } else {
-            ((ReceivedMessageViewHolder) holder).bind(message);
+            ReceivedMessageViewHolder receivedHolder = (ReceivedMessageViewHolder) holder;
+            receivedHolder.tvMessage.setText(message.getContent());
+            receivedHolder.tvTime.setText(formatTime(message.getCreatedAt()));
+            receivedHolder.tvSender.setText(message.getFromUser().getUsername());
+
+            // Establecer ancho máximo
+            receivedHolder.tvMessage.setMaxWidth(maxWidth);
         }
     }
 
@@ -95,6 +109,7 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private static String formatTime(Date date) {
+        if (date == null) return "Enviando...";
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
         return sdf.format(date);
     }

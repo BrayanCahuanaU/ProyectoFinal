@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.parse.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -79,12 +80,30 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void loadMessages() {
+        // Si tengo postId, filtro por post (chat asociado a una publicación)
+        // Si no, chat “libre” uno a uno
         ParseQuery<Message> query = ParseQuery.getQuery(Message.class);
-        query.whereEqualTo("post", ParseObject.createWithoutData("Post", postId));
+
+        if (postId != null) {
+            query.whereEqualTo("post", ParseObject.createWithoutData("Post", postId));
+        } else {
+            // chat directo: mensajes entre current y receiver
+            ParseUser me = ParseUser.getCurrentUser();
+            ParseUser them = ParseUser.createWithoutData(ParseUser.class, receiverId);
+
+            ParseQuery<Message> q1 = ParseQuery.getQuery(Message.class)
+                    .whereEqualTo("fromUser", me)
+                    .whereEqualTo("toUser",   them);
+            ParseQuery<Message> q2 = ParseQuery.getQuery(Message.class)
+                    .whereEqualTo("fromUser", them)
+                    .whereEqualTo("toUser",   me);
+
+            query = ParseQuery.or(Arrays.asList(q1, q2));
+        }
+
         query.include("fromUser");
         query.include("toUser");
         query.orderByAscending("createdAt");
-
         query.findInBackground((messagesList, e) -> {
             loadingPanel.setVisibility(View.GONE);
             if (e == null) {
@@ -102,6 +121,11 @@ public class ChatActivity extends AppCompatActivity {
         String content = etMessage.getText().toString().trim();
         if (content.isEmpty()) return;
 
+        if (receiver == null) {
+            Toast.makeText(this, "Esperando información del receptor...", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         Message message = new Message();
         message.setFromUser(ParseUser.getCurrentUser());
         message.setToUser(receiver);
@@ -116,20 +140,27 @@ public class ChatActivity extends AppCompatActivity {
 
         // Guardar en Parse
         message.saveInBackground(e -> {
-            if (e != null) {
-                Toast.makeText(this, "Error enviando mensaje", Toast.LENGTH_SHORT).show();
-                // Opcional: remover el mensaje si falla
-                messages.remove(message);
-                adapter.notifyDataSetChanged();
-            }
+            runOnUiThread(() -> {
+                if (e != null) {
+                    Toast.makeText(this, "Error enviando mensaje", Toast.LENGTH_SHORT).show();
+                    int position = messages.indexOf(message);
+                    if (position != -1) {
+                        messages.remove(position);
+                        adapter.notifyItemRemoved(position);
+                    }
+                }
+            });
         });
     }
 
     private void scrollToBottom() {
-        rvMessages.postDelayed(() -> {
-            if (messages.size() > 0) {
-                rvMessages.smoothScrollToPosition(messages.size() - 1);
-            }
-        }, 100);
+        if (rvMessages.getAdapter() != null && rvMessages.getAdapter().getItemCount() > 0) {
+            rvMessages.post(() -> {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) rvMessages.getLayoutManager();
+                if (layoutManager != null) {
+                    layoutManager.scrollToPositionWithOffset(messages.size() - 1, 0);
+                }
+            });
+        }
     }
 }
