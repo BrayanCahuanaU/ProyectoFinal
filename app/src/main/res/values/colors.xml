@@ -5,4 +5,10 @@
     <color name="blue">#0F53A6</color>
     <color name="grey">#D7D7D7</color>
     <color name="red">#BA0000</color>
+    <color name="orange">#F67402</color>
+
+    <color name="blur_background">#80181A1D</color> <!-- Negro con 50% transparencia -->
+    <color name="card_background">#4DFFFFFF</color> <!-- Blanco con 30% transparencia -->
+    <color name="text_background">#B3FFFFFF</color> <!-- Blanco con 70% transparencia -->
+
 </resources>

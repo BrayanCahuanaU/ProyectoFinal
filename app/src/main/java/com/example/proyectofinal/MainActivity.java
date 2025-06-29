@@ -4,12 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import androidx.appcompat.widget.SearchView;
-
-import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -17,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
@@ -32,33 +28,36 @@ public class MainActivity extends AppCompatActivity {
     private SearchView svPosts;
 
     private Spinner spPrice, spRating, spSort;
-
-
+    private MaterialButton btnAccount, btnNewPost, btnChats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 1) Inicialización de Views
+        rvPosts = findViewById(R.id.rvPosts);
+        adapter = new PostAdapter(this, posts, false);
+        svPosts = findViewById(R.id.svPosts);
 
-        // 1) Views existentes
-        rvPosts    = findViewById(R.id.rvPosts);
-        adapter    = new PostAdapter(this, posts, false);
-        svPosts    = findViewById(R.id.svPosts);
-
-        // inicializa aquí tus spinners como campos
-        spPrice  = findViewById(R.id.spPriceRange);
+        // Spinners para filtros
+        spPrice = findViewById(R.id.spPriceRange);
         spRating = findViewById(R.id.spMinRating);
-        spSort   = findViewById(R.id.spSort);
+        spSort = findViewById(R.id.spSort);
 
-        // 2 columnas
+        // Botones inferiores
+        btnAccount = findViewById(R.id.btnAccount);
+        btnNewPost = findViewById(R.id.btnNewPost);
+        btnChats = findViewById(R.id.btnChats);
+
+        // Configuración del RecyclerView
         rvPosts.setLayoutManager(new GridLayoutManager(this, 2));
         rvPosts.setAdapter(adapter);
 
-        // 2) Carga inicial
+        // 2) Carga inicial de posts
         loadPosts(null);
 
-        // 3) Listener de búsqueda
+        // 3) Configuración del SearchView
         svPosts.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -68,46 +67,48 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // Búsqueda en tiempo real opcional:
                 loadPosts(newText);
                 return true;
             }
         });
 
-        AdapterView.OnItemSelectedListener reloadListener = new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        // 4) Listeners para los spinners
+        AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 loadPosts(svPosts.getQuery().toString());
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) { }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         };
 
-        spPrice.setOnItemSelectedListener(reloadListener);
-        spRating.setOnItemSelectedListener(reloadListener);
-        spSort.setOnItemSelectedListener(reloadListener);
+        spPrice.setOnItemSelectedListener(spinnerListener);
+        spRating.setOnItemSelectedListener(spinnerListener);
+        spSort.setOnItemSelectedListener(spinnerListener);
 
-        FloatingActionButton btnNewPost = findViewById(R.id.btnNewPost);
+        // 5) Listeners para los botones inferiores
         btnNewPost.setOnClickListener(v -> {
             startActivity(new Intent(this, CreatePostActivity.class));
         });
 
-        FloatingActionButton btnAccount = findViewById(R.id.btnAccount);
-        btnAccount.setOnClickListener(v ->
-                startActivity(new Intent(this, AccountActivity.class))
-        );
+        btnAccount.setOnClickListener(v -> {
+            startActivity(new Intent(this, AccountActivity.class));
+        });
 
-        ImageButton btnChats = findViewById(R.id.btnChats);
         btnChats.setOnClickListener(v -> {
             startActivity(new Intent(this, ChatHistoryActivity.class));
         });
 
-
+        // Verificar usuario actual
         ParseUser currentUser = ParseUser.getCurrentUser();
     }
 
     private void loadPosts(@Nullable String query) {
-        String q = query != null ? query : "";
+        String q = (query != null) ? query : "";
 
-        // Búsqueda por título/desc/categoría
+        // Crear consultas para búsqueda
         ParseQuery<Post> qTitle = ParseQuery.getQuery(Post.class)
                 .whereMatches(Post.KEY_TITLE, "(?i).*" + q + ".*");
         ParseQuery<Post> qDesc = ParseQuery.getQuery(Post.class)
@@ -117,32 +118,33 @@ public class MainActivity extends AppCompatActivity {
 
         ParseQuery<Post> mainQuery = ParseQuery.or(Arrays.asList(qTitle, qDesc, qCat));
 
-        // --- FILTRO DE PRECIO ---
+        // --- APLICAR FILTROS ---
+
+        // Filtro de precio
         String priceSel = spPrice.getSelectedItem().toString();
         switch (priceSel) {
             case "0 - 50":
-                mainQuery.whereGreaterThanOrEqualTo("price", 0);
-                mainQuery.whereLessThanOrEqualTo("price", 50);
+                mainQuery.whereGreaterThanOrEqualTo("price", 0)
+                        .whereLessThanOrEqualTo("price", 50);
                 break;
             case "50 - 100":
-                mainQuery.whereGreaterThanOrEqualTo("price", 50);
-                mainQuery.whereLessThanOrEqualTo("price", 100);
+                mainQuery.whereGreaterThanOrEqualTo("price", 50)
+                        .whereLessThanOrEqualTo("price", 100);
                 break;
             case "100+":
                 mainQuery.whereGreaterThan("price", 100);
                 break;
-            default:
-                // “Todos” no añade condición
+            // "Todos" no aplica filtro
         }
 
-        // --- FILTRO DE RATING MÍNIMO ---
+        // Filtro de rating mínimo
         String ratingSel = spRating.getSelectedItem().toString();
         if (!ratingSel.equals("Todos")) {
-            int minRating = Integer.parseInt(ratingSel.substring(0,1));
+            int minRating = Integer.parseInt(ratingSel.substring(0, 1));
             mainQuery.whereGreaterThanOrEqualTo("rating", minRating);
         }
 
-        // --- ORDEN ---
+        // Ordenamiento
         String sortSel = spSort.getSelectedItem().toString();
         switch (sortSel) {
             case "Precio ↑":
@@ -157,21 +159,19 @@ public class MainActivity extends AppCompatActivity {
             case "Título Z→A":
                 mainQuery.orderByDescending(Post.KEY_TITLE);
                 break;
-            default:
-                // “Recientes”
+            default: // "Recientes"
                 mainQuery.orderByDescending("createdAt");
         }
 
-        // Ejecutar
+        // Ejecutar consulta
         mainQuery.findInBackground((list, e) -> {
             if (e == null) {
                 posts.clear();
                 posts.addAll(list);
                 adapter.notifyDataSetChanged();
             } else {
-                Toast.makeText(this, "Error cargando posts", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error cargando posts: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
 }
