@@ -11,16 +11,26 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/grey"
         android:gravity="center_vertical"
+        android:orientation="horizontal"
         android:paddingHorizontal="16dp">
 
         <ImageButton
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:contentDescription="back"
             android:padding="5dp"
             android:scaleType="fitCenter"
             android:src="@drawable/volver"
             android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/tvChatTitle"
@@ -30,6 +40,23 @@
             android:textSize="18sp"
             android:textColor="@android:color/white"
             android:layout_marginStart="16dp"/>
+
+        <Button
+            android:id="@+id/btnServiceDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="Marcar servicio completado"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btnRate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:text="Calificar servicio"
+            android:visibility="gone"
+            android:layout_margin="8dp"/>
 
     </LinearLayout>
 

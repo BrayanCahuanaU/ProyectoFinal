@@ -1,18 +1,23 @@
-// ChatActivity.java
 package com.example.proyectofinal;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.parse.*;
+
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,42 +31,47 @@ public class ChatActivity extends AppCompatActivity {
     private ImageButton btnSend;
     private LinearLayout loadingPanel;
     private ChatAdapter adapter;
+    private Button btnServiceDone, btnRate;
 
     private List<Message> messages = new ArrayList<>();
     private String postId;
     private String receiverId;
     private ParseUser receiver;
+    private Post currentPost;
+    private boolean isOwner = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        // Obtener datos del intent
-        postId = getIntent().getStringExtra("postId");
-        receiverId = getIntent().getStringExtra("receiverId");
+        postId      = getIntent().getStringExtra("postId");
+        receiverId  = getIntent().getStringExtra("receiverId");
 
-        // Configurar views
-        rvMessages = findViewById(R.id.rvMessages);
-        etMessage = findViewById(R.id.etMessage);
-        btnSend = findViewById(R.id.btnSend);
-        loadingPanel = findViewById(R.id.loadingPanel);
+        rvMessages     = findViewById(R.id.rvMessages);
+        etMessage      = findViewById(R.id.etMessage);
+        btnSend        = findViewById(R.id.btnSend);
+        loadingPanel   = findViewById(R.id.loadingPanel);
+        btnServiceDone = findViewById(R.id.btnServiceDone);
+        btnRate        = findViewById(R.id.btnRate);
+        btnServiceDone.setVisibility(View.GONE);
 
-        TextView tvTitle = findViewById(R.id.tvChatTitle);
+        btnRate.setVisibility(View.GONE);
+
         ImageButton btnBack = findViewById(R.id.btnBack);
-
         btnBack.setOnClickListener(v -> finish());
 
-        // Configurar RecyclerView
-        adapter = new ChatAdapter(messages, ParseUser.getCurrentUser().getObjectId());
+        adapter = new ChatAdapter(messages, ParseUser.getCurrentUser() != null ? ParseUser.getCurrentUser().getObjectId() : "");
         rvMessages.setAdapter(adapter);
         rvMessages.setLayoutManager(new LinearLayoutManager(this));
 
-        // Cargar información del receptor
-        loadReceiver();
+        setupChat();
+    }
 
-        // Configurar botón de enviar
+    private void setupChat() {
         btnSend.setOnClickListener(v -> sendMessage());
+        loadReceiver();
     }
 
     private void loadReceiver() {
@@ -80,29 +90,24 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void loadMessages() {
-        // Si tengo postId, filtro por post (chat asociado a una publicación)
-        // Si no, chat “libre” uno a uno
-        ParseQuery<Message> query = ParseQuery.getQuery(Message.class);
-
+        ParseQuery<Message> query;
         if (postId != null) {
-            query.whereEqualTo("post", ParseObject.createWithoutData("Post", postId));
+            query = ParseQuery.getQuery(Message.class)
+                    .whereEqualTo("post", ParseObject.createWithoutData("Post", postId));
         } else {
-            // chat directo: mensajes entre current y receiver
-            ParseUser me = ParseUser.getCurrentUser();
+            ParseUser me   = ParseUser.getCurrentUser();
             ParseUser them = ParseUser.createWithoutData(ParseUser.class, receiverId);
-
             ParseQuery<Message> q1 = ParseQuery.getQuery(Message.class)
                     .whereEqualTo("fromUser", me)
-                    .whereEqualTo("toUser",   them);
+                    .whereEqualTo("toUser", them);
             ParseQuery<Message> q2 = ParseQuery.getQuery(Message.class)
                     .whereEqualTo("fromUser", them)
-                    .whereEqualTo("toUser",   me);
-
+                    .whereEqualTo("toUser", me);
             query = ParseQuery.or(Arrays.asList(q1, q2));
         }
-
         query.include("fromUser");
         query.include("toUser");
+        query.include("post");
         query.orderByAscending("createdAt");
         query.findInBackground((messagesList, e) -> {
             loadingPanel.setVisibility(View.GONE);
@@ -111,56 +116,171 @@ public class ChatActivity extends AppCompatActivity {
                 messages.addAll(messagesList);
                 adapter.notifyDataSetChanged();
                 scrollToBottom();
+
+                // Forzar recarga del post si ya existe
+                if (currentPost != null) {
+                    currentPost.fetchInBackground((obj, e2) -> {
+                        inferPostAndLoad();
+                    });
+                } else {
+                    inferPostAndLoad();
+                }
             } else {
                 Toast.makeText(this, "Error cargando mensajes", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void sendMessage() {
-        String content = etMessage.getText().toString().trim();
-        if (content.isEmpty()) return;
-
-        if (receiver == null) {
-            Toast.makeText(this, "Esperando información del receptor...", Toast.LENGTH_SHORT).show();
+    private void inferPostAndLoad() {
+        if (messages.isEmpty()) {
+            afterMessagesLoaded(); // Asegurarse de llamar esto siempre
             return;
         }
+
+        // Intentar obtener el post del primer mensaje
+        if (postId == null) {
+            Message first = messages.get(0);
+            ParseObject postPtr = first.getParseObject("post");
+            if (postPtr != null) {
+                postId = postPtr.getObjectId();
+                postPtr.fetchInBackground((o, fe) -> {
+                    if (fe == null && o instanceof Post) {
+                        currentPost = (Post) o;
+                    }
+                    afterMessagesLoaded();
+                });
+                return;
+            }
+        }
+
+        // Cargar post si tenemos ID pero no el objeto
+        if (postId != null && currentPost == null) {
+            ParseQuery<Post> pq = ParseQuery.getQuery(Post.class);
+            pq.getInBackground(postId, (post, pe) -> {
+                if (pe == null) currentPost = post;
+                afterMessagesLoaded();
+            });
+        } else {
+            afterMessagesLoaded();
+        }
+    }
+
+    private void afterMessagesLoaded() {
+        // Restablecer visibilidad
+        btnServiceDone.setVisibility(View.GONE);
+        btnRate.setVisibility(View.GONE);
+
+        if (currentPost == null || messages.isEmpty() || ParseUser.getCurrentUser() == null) {
+            return;
+        }
+
+        ParseUser me = ParseUser.getCurrentUser();
+        String meId = me.getObjectId();
+
+        // Verificar si el usuario actual es el dueño del post
+        isOwner = currentPost.getUser() != null &&
+                currentPost.getUser().getObjectId().equals(meId);
+
+        if (isOwner) {
+            // Dueño del post - mostrar botón de completado servicio
+            btnServiceDone.setVisibility(currentPost.isServiceCompleted() ? View.GONE : View.VISIBLE);
+            btnServiceDone.setOnClickListener(v -> markServiceDone());
+        } else {
+            // No es dueño - verificar condiciones para calificación
+            Message first = messages.get(0);
+            if (first.getFromUser() == null) return;
+
+            String initiatorId = first.getFromUser().getObjectId();
+            Date convoStart = first.getCreatedAt();
+            boolean serviceDone = currentPost.isServiceCompleted();
+
+            // Verificar si el usuario actual inició la conversación
+            if (initiatorId.equals(meId) && serviceDone) {
+                int myCount = 0;
+                for (Message m : messages) {
+                    if (m.getFromUser() != null && meId.equals(m.getFromUser().getObjectId())) {
+                        myCount++;
+                    }
+                }
+
+                // Calcular diferencia de tiempo correctamente
+                long timeDifference = System.currentTimeMillis() - convoStart.getTime();
+                boolean oneDayPassed = timeDifference >= 24L * 3600L * 1000L;
+
+                if (myCount >= 4 && oneDayPassed) {
+                    btnRate.setVisibility(View.VISIBLE);
+                    btnRate.setOnClickListener(v -> showRatingDialog());
+                }
+            }
+        }
+    }
+
+    private void markServiceDone() {
+        btnServiceDone.setEnabled(false);
+        currentPost.setServiceCompleted(true);
+        currentPost.saveInBackground(e -> {
+            if (e == null) {
+                Toast.makeText(this, "Servicio completado", Toast.LENGTH_SHORT).show();
+                btnServiceDone.setVisibility(View.GONE);
+
+                // Actualizar UI para posible calificación
+                if (!isOwner) {
+                    afterMessagesLoaded();
+                }
+            } else {
+                btnServiceDone.setEnabled(true);
+                Toast.makeText(this, "No se pudo marcar servicio", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void sendMessage() {
+        if (ParseUser.getCurrentUser() == null || receiver == null) return;
+        String content = etMessage.getText().toString().trim();
+        if (content.isEmpty()) return;
 
         Message message = new Message();
         message.setFromUser(ParseUser.getCurrentUser());
         message.setToUser(receiver);
         message.setContent(content);
-        message.setPost(ParseObject.createWithoutData("Post", postId));
+        if (postId != null) message.setPost(ParseObject.createWithoutData("Post", postId));
 
-        // Mostrar mensaje localmente inmediatamente
         messages.add(message);
         adapter.notifyItemInserted(messages.size() - 1);
         etMessage.setText("");
         scrollToBottom();
 
-        // Guardar en Parse
         message.saveInBackground(e -> {
-            runOnUiThread(() -> {
-                if (e != null) {
-                    Toast.makeText(this, "Error enviando mensaje", Toast.LENGTH_SHORT).show();
-                    int position = messages.indexOf(message);
-                    if (position != -1) {
-                        messages.remove(position);
-                        adapter.notifyItemRemoved(position);
-                    }
-                }
-            });
+            if (e != null) Toast.makeText(this, "Error enviando mensaje", Toast.LENGTH_SHORT).show();
         });
     }
 
     private void scrollToBottom() {
-        if (rvMessages.getAdapter() != null && rvMessages.getAdapter().getItemCount() > 0) {
-            rvMessages.post(() -> {
-                LinearLayoutManager layoutManager = (LinearLayoutManager) rvMessages.getLayoutManager();
-                if (layoutManager != null) {
-                    layoutManager.scrollToPositionWithOffset(messages.size() - 1, 0);
-                }
-            });
-        }
+        rvMessages.post(() -> {
+            if (rvMessages.getLayoutManager() instanceof LinearLayoutManager) {
+                ((LinearLayoutManager) rvMessages.getLayoutManager())
+                        .scrollToPositionWithOffset(messages.size() - 1, 0);
+            }
+        });
+    }
+
+    private void showRatingDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_rate, null);
+        RatingBar rb = dialogView.findViewById(R.id.ratingBarDialog);
+        new AlertDialog.Builder(this)
+                .setTitle("Calificar servicio")
+                .setView(dialogView)
+                .setPositiveButton("Enviar", (d,i) -> {
+                    int score = (int) rb.getRating();
+                    currentPost.incrementRating(score);
+                    currentPost.saveInBackground(e -> {
+                        if (e == null) {
+                            Toast.makeText(this, "Gracias por tu calificación", Toast.LENGTH_SHORT).show();
+                            btnRate.setVisibility(View.GONE);
+                        }
+                    });
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 }

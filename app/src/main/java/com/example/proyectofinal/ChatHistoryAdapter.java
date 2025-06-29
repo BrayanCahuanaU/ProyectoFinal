@@ -1,4 +1,3 @@
-// ChatHistoryAdapter.java
 package com.example.proyectofinal;
 
 import android.view.LayoutInflater;
@@ -9,37 +8,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
+import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
-import java.util.Collections;
 import java.util.List;
 
 public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.ChatViewHolder> {
-
-    public static class ChatInfo {
-        public ParseUser user;
-        public String postTitle;
-
-        public ChatInfo(ParseUser user, String postTitle) {
-            this.user = user;
-            this.postTitle = postTitle;
-        }
-    }
 
     public interface OnChatClickListener {
         void onChatClick(ParseUser user);
     }
 
-    private List<ChatInfo> chats;
-    private OnChatClickListener listener;
+    private List<ChatHistoryActivity.ChatConversation> conversations;
+    private final OnChatClickListener listener;
+    private final String currentUserId;
 
-    public ChatHistoryAdapter(OnChatClickListener listener) {
+    public ChatHistoryAdapter(OnChatClickListener listener, String currentUserId) {
         this.listener = listener;
-        this.chats = Collections.emptyList();
+        this.currentUserId = currentUserId;
     }
 
-    public void setChats(List<ChatInfo> chats) {
-        this.chats = chats != null ? chats : Collections.emptyList();
+    public void setConversations(List<ChatHistoryActivity.ChatConversation> conversations) {
+        this.conversations = conversations;
         notifyDataSetChanged();
     }
 
@@ -53,22 +45,43 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
-        ChatInfo chat = chats.get(position);
-        ParseUser user = chat.user;
-        String postTitle = chat.postTitle;
+        ChatHistoryActivity.ChatConversation conversation = conversations.get(position);
+        ParseUser user = conversation.getOtherUser();
+        Message lastMessage = conversation.getLastMessage();
 
-        // Mostrar "usuario | título del post" o solo usuario
-        if (postTitle != null && !postTitle.isEmpty()) {
-            holder.tvUsername.setText(user.getUsername() + " | " + postTitle);
+        holder.tvUsername.setText(user.getUsername());
+        holder.tvLastMessage.setText(lastMessage.getContent());
+
+        // Mostrar "Tú:" si el último mensaje es del usuario actual
+        if (lastMessage.getFromUser().getObjectId().equals(currentUserId)) {
+            holder.tvSenderIndicator.setVisibility(View.VISIBLE);
         } else {
-            holder.tvUsername.setText(user.getUsername());
+            holder.tvSenderIndicator.setVisibility(View.GONE);
         }
 
-        ParseFile profilePic = user.getParseFile("profilePic");
+        // Cargar imagen de perfil con Glide (transformación circular)
+        ParseFile profilePic = user.getParseFile("profileImage");
         if (profilePic != null) {
-            Glide.with(holder.itemView.getContext())
-                    .load(profilePic.getUrl())
-                    .into(holder.ivProfile);
+            try {
+                String imageUrl = profilePic.getUrl();
+                Glide.with(holder.itemView.getContext())
+                        .load(imageUrl)
+                        .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                        .placeholder(R.drawable.cuenta)
+                        .error(R.drawable.cuenta)
+                        .into(holder.ivProfile);
+            } catch (Exception e) {
+                holder.ivProfile.setImageResource(R.drawable.cuenta);
+            }
+        } else {
+            holder.ivProfile.setImageResource(R.drawable.cuenta);
+        }
+
+        // Ocultar divisor en el último elemento
+        if (position == getItemCount() - 1) {
+            holder.divider.setVisibility(View.GONE);
+        } else {
+            holder.divider.setVisibility(View.VISIBLE);
         }
 
         holder.itemView.setOnClickListener(v -> listener.onChatClick(user));
@@ -76,19 +89,23 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
 
     @Override
     public int getItemCount() {
-        return chats.size();
+        return conversations != null ? conversations.size() : 0;
     }
 
     static class ChatViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProfile;
         TextView tvUsername;
         TextView tvLastMessage;
+        TextView tvSenderIndicator;
+        View divider;
 
         ChatViewHolder(View itemView) {
             super(itemView);
             ivProfile = itemView.findViewById(R.id.ivProfile);
             tvUsername = itemView.findViewById(R.id.tvUsername);
             tvLastMessage = itemView.findViewById(R.id.tvLastMessage);
+            tvSenderIndicator = itemView.findViewById(R.id.tvSenderIndicator);
+            divider = itemView.findViewById(R.id.divider);
         }
     }
 }
