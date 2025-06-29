@@ -14,6 +14,7 @@
         android:padding="5dp"
         android:layout_gravity="center"
         android:layout_marginBottom="20dp">
+
         <!-- Botón de volver (izquierda) -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnBack"
@@ -39,13 +40,13 @@
             app:backgroundTint="@color/white"/>
     </RelativeLayout>
 
-    <!-- Contenedor de datos de usuario -->
+    <!-- Contenedor de datos de usuario - MEJORADO JERARQUÍA -->
     <LinearLayout
         android:id="@+id/userDataContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="16dp"
+        android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -54,51 +55,200 @@
             android:layout_height="wrap_content"
             android:text="Datos de tu cuenta"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Datos de usuario -->
-        <TextView
-            android:id="@+id/tvAccUsername"
+        <!-- Foto de perfil -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/cuenta"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:layout_marginBottom="16dp"
+            app:civ_border_width="2dp"
+            app:civ_border_color="@color/black"/>
+
+        <!-- Datos de usuario con etiquetas claras -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvAccEmail"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Usuario:"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorSecondary"/>
+
+            <TextView
+                android:id="@+id/tvAccUsername"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:textSize="16sp"
+                android:textStyle="normal"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical">
 
-        <!-- Nuevos campos -->
-        <TextView
-            android:id="@+id/tvAccCreatedAt"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Correo:"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorSecondary"/>
+
+            <TextView
+                android:id="@+id/tvAccEmail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
+            android:gravity="center_vertical">
 
-        <TextView
-            android:id="@+id/tvAccPostCount"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Creación:"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorSecondary"/>
+
+            <TextView
+                android:id="@+id/tvAccCreatedAt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Publicaciones:"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorSecondary"/>
+
+            <TextView
+                android:id="@+id/tvAccPostCount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.5"
+                android:textSize="16sp"
+                android:textStyle="normal"/>
+        </LinearLayout>
     </LinearLayout>
 
-    <!-- Lista de mis posts -->
-    <TextView
+    <!-- Opciones de cuenta - MEJORADA -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Mis Publicaciones"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginTop="24dp"/>
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:padding="16dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvMyPosts"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Opciones para cuenta"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Botones de acción - ESTILO MEJORADO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"
+            android:weightSum="2">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnEditAccount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:icon="@drawable/editar_usuario"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:backgroundTint="@color/black"
+                android:text="Editar Cuenta"
+                android:textColor="@android:color/white"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDeleteAccount"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:icon="@drawable/eliminar_usuario"
+                app:backgroundTint="@color/red"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                android:text="Darse de baja"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Lista de mis posts - MEJORADA -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="4dp"
-        tools:listitem="@layout/item_post"
-        tools:showIn="@layout/activity_account" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="24dp"
+        android:padding="16dp">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mis Publicaciones"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMyPosts"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="4dp"
+            tools:listitem="@layout/item_post"
+            tools:showIn="@layout/activity_account" />
+    </LinearLayout>
 </LinearLayout>
