@@ -57,8 +57,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:queryHint="Buscar posts..."
-        android:iconifiedByDefault="false"
-        android:layout_marginBottom="16dp"/>
+        android:iconifiedByDefault="true"
+        android:layout_marginBottom="0dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp"
+        android:weightSum="3"
+        android:gravity="center_vertical">
+
+        <!-- Filtro precio -->
+        <Spinner
+            android:id="@+id/spPriceRange"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/price_ranges" />
+
+        <!-- Filtro rating -->
+        <Spinner
+            android:id="@+id/spMinRating"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/min_ratings" />
+
+        <!-- Orden -->
+        <Spinner
+            android:id="@+id/spSort"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/sort_options" />
+    </LinearLayout>
 
 
     <androidx.recyclerview.widget.RecyclerView

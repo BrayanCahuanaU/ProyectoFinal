@@ -3,10 +3,12 @@ package com.example.proyectofinal;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import androidx.appcompat.widget.SearchView;
 
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     private List<Post> posts = new ArrayList<>();
     private SearchView svPosts;
 
+    private Spinner spPrice, spRating, spSort;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,11 @@ public class MainActivity extends AppCompatActivity {
         rvPosts    = findViewById(R.id.rvPosts);
         adapter    = new PostAdapter(this, posts, false);
         svPosts    = findViewById(R.id.svPosts);
+
+        // inicializa aquí tus spinners como campos
+        spPrice  = findViewById(R.id.spPriceRange);
+        spRating = findViewById(R.id.spMinRating);
+        spSort   = findViewById(R.id.spSort);
 
         // 2 columnas
         rvPosts.setLayoutManager(new GridLayoutManager(this, 2));
@@ -64,6 +74,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        AdapterView.OnItemSelectedListener reloadListener = new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                loadPosts(svPosts.getQuery().toString());
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) { }
+        };
+
+        spPrice.setOnItemSelectedListener(reloadListener);
+        spRating.setOnItemSelectedListener(reloadListener);
+        spSort.setOnItemSelectedListener(reloadListener);
+
         FloatingActionButton btnNewPost = findViewById(R.id.btnNewPost);
         btnNewPost.setOnClickListener(v -> {
             startActivity(new Intent(this, CreatePostActivity.class));
@@ -84,16 +105,64 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadPosts(@Nullable String query) {
-        ParseQuery<Post> qTitle = ParseQuery.getQuery(Post.class)
-                .whereMatches(Post.KEY_TITLE, "(?i).*" + (query != null ? query : "") + ".*");
-        ParseQuery<Post> qDesc = ParseQuery.getQuery(Post.class)
-                .whereContains(Post.KEY_DESC, query != null ? query : "");
-        ParseQuery<Post> qCat  = ParseQuery.getQuery(Post.class)
-                .whereMatches(Post.KEY_CATEGORY, "(?i).*" + (query != null ? query : "") + ".*");
+        String q = query != null ? query : "";
 
-        List<ParseQuery<Post>> orQueries = Arrays.asList(qTitle, qDesc, qCat);
-        ParseQuery<Post> mainQuery = ParseQuery.or(orQueries);
-        mainQuery.orderByDescending("createdAt");
+        // Búsqueda por título/desc/categoría
+        ParseQuery<Post> qTitle = ParseQuery.getQuery(Post.class)
+                .whereMatches(Post.KEY_TITLE, "(?i).*" + q + ".*");
+        ParseQuery<Post> qDesc = ParseQuery.getQuery(Post.class)
+                .whereMatches(Post.KEY_DESC, "(?i).*" + q + ".*");
+        ParseQuery<Post> qCat = ParseQuery.getQuery(Post.class)
+                .whereMatches(Post.KEY_CATEGORY, "(?i).*" + q + ".*");
+
+        ParseQuery<Post> mainQuery = ParseQuery.or(Arrays.asList(qTitle, qDesc, qCat));
+
+        // --- FILTRO DE PRECIO ---
+        String priceSel = spPrice.getSelectedItem().toString();
+        switch (priceSel) {
+            case "0 - 50":
+                mainQuery.whereGreaterThanOrEqualTo("price", 0);
+                mainQuery.whereLessThanOrEqualTo("price", 50);
+                break;
+            case "50 - 100":
+                mainQuery.whereGreaterThanOrEqualTo("price", 50);
+                mainQuery.whereLessThanOrEqualTo("price", 100);
+                break;
+            case "100+":
+                mainQuery.whereGreaterThan("price", 100);
+                break;
+            default:
+                // “Todos” no añade condición
+        }
+
+        // --- FILTRO DE RATING MÍNIMO ---
+        String ratingSel = spRating.getSelectedItem().toString();
+        if (!ratingSel.equals("Todos")) {
+            int minRating = Integer.parseInt(ratingSel.substring(0,1));
+            mainQuery.whereGreaterThanOrEqualTo("rating", minRating);
+        }
+
+        // --- ORDEN ---
+        String sortSel = spSort.getSelectedItem().toString();
+        switch (sortSel) {
+            case "Precio ↑":
+                mainQuery.orderByAscending("price");
+                break;
+            case "Precio ↓":
+                mainQuery.orderByDescending("price");
+                break;
+            case "Título A→Z":
+                mainQuery.orderByAscending(Post.KEY_TITLE);
+                break;
+            case "Título Z→A":
+                mainQuery.orderByDescending(Post.KEY_TITLE);
+                break;
+            default:
+                // “Recientes”
+                mainQuery.orderByDescending("createdAt");
+        }
+
+        // Ejecutar
         mainQuery.findInBackground((list, e) -> {
             if (e == null) {
                 posts.clear();
@@ -104,4 +173,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }
