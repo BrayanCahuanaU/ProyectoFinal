@@ -7,9 +7,12 @@
 
     <RatingBar
         android:id="@+id/ratingBarDialog"
-        style="?android:attr/ratingBarStyleSmall"
+        style="?android:attr/ratingBarStyle"
+        android:layout_gravity="center"
+        android:isIndicator="false"
         android:numStars="5"
         android:stepSize="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
 </LinearLayout>

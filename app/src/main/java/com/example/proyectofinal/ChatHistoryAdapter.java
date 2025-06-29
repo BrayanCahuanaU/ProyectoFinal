@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
 public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.ChatViewHolder> {
 
     public interface OnChatClickListener {
-        void onChatClick(ParseUser user);
+        void onChatClick(ParseUser user, Message lastMessage);
     }
 
     private List<ChatHistoryActivity.ChatConversation> conversations;
@@ -52,6 +51,9 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
         holder.tvUsername.setText(user.getUsername());
         holder.tvLastMessage.setText(lastMessage.getContent());
 
+        // Listener que pasa user y lastMessage
+        holder.itemView.setOnClickListener(v -> listener.onChatClick(user, lastMessage));
+
         // Mostrar "Tú:" si el último mensaje es del usuario actual
         if (lastMessage.getFromUser().getObjectId().equals(currentUserId)) {
             holder.tvSenderIndicator.setVisibility(View.VISIBLE);
@@ -61,18 +63,13 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
 
         // Cargar imagen de perfil con Glide (transformación circular)
         ParseFile profilePic = user.getParseFile("profileImage");
-        if (profilePic != null) {
-            try {
-                String imageUrl = profilePic.getUrl();
-                Glide.with(holder.itemView.getContext())
-                        .load(imageUrl)
-                        .apply(RequestOptions.bitmapTransform(new CircleCrop()))
-                        .placeholder(R.drawable.cuenta)
-                        .error(R.drawable.cuenta)
-                        .into(holder.ivProfile);
-            } catch (Exception e) {
-                holder.ivProfile.setImageResource(R.drawable.cuenta);
-            }
+        if (profilePic != null && profilePic.getUrl() != null) {
+            Glide.with(holder.itemView.getContext())
+                    .load(profilePic.getUrl())
+                    .apply(RequestOptions.bitmapTransform(new CircleCrop()))
+                    .placeholder(R.drawable.cuenta)
+                    .error(R.drawable.cuenta)
+                    .into(holder.ivProfile);
         } else {
             holder.ivProfile.setImageResource(R.drawable.cuenta);
         }
@@ -83,8 +80,6 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
         } else {
             holder.divider.setVisibility(View.VISIBLE);
         }
-
-        holder.itemView.setOnClickListener(v -> listener.onChatClick(user));
     }
 
     @Override

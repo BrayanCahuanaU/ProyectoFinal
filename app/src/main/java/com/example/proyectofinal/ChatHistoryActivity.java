@@ -141,9 +141,11 @@ public class ChatHistoryActivity extends AppCompatActivity {
         });
     }
 
-    private void openChat(ParseUser user) {
+    private void openChat(ParseUser user, Message lastMessage) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("receiverId", user.getObjectId());
+        // Obtén el postId desde el último mensaje
+        intent.putExtra("postId", lastMessage.getParseObject("post").getObjectId());
         startActivity(intent);
     }
 }
