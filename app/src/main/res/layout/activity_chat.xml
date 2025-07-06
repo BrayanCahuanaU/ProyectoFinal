@@ -102,7 +102,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:background="@color/grey">
+        android:background="@color/lightblack">
 
         <EditText
             android:id="@+id/etMessage"
@@ -112,7 +112,6 @@
             android:hint="Escribe un mensaje..."
             android:inputType="textMultiLine"
             android:maxLines="3"
-            android:background="@color/grey"
             android:padding="12dp"/>
 
         <ImageButton

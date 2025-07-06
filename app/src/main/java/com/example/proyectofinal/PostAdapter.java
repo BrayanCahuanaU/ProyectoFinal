@@ -37,7 +37,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder h, int pos) {
         Post post = posts.get(pos);
         h.tvTitle.setText(post.getTitle());
-        h.tvPrice.setText("$" + String.format("%.2f", post.getPrice()));
+        h.tvPrice.setText("S/." + String.format("%.2f", post.getPrice()));
         h.ratingBar.setRating(post.getRating().floatValue());
 
         // Primera imagen

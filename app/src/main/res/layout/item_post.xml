@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="8dp"
-        android:background="@color/card_background">
+        android:background="@color/lightblack">
 
         <ImageView
             android:id="@+id/ivThumbnail"
@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:paddingHorizontal="8dp"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold" />
         <!-- Contenedor horizontal para precio y rating -->

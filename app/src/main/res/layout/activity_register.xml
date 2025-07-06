@@ -1,156 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
-    android:layout_gravity="center"
-    android:paddingVertical="20dp"
     android:background="@color/black">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Registrar Cuenta"
-        android:textSize="20dp"
+        android:orientation="vertical"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:padding="8dp"/>
+        android:padding="20dp">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!-- Contenedor único para todo el contenido desplazable -->
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_horizontal">
+            android:text="Registrar Cuenta"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:paddingBottom="16dp"/>
 
-            <!-- Imagen de perfil -->
-            <ImageView
-                android:id="@+id/ivProfile"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:src="@drawable/subirimagen"
-                android:contentDescription="Foto de perfil"
-                app:tint="@color/white"
-                android:scaleType="centerCrop"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="4dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"/>
+        <!-- Imagen de perfil -->
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/subirimagen"
+            android:contentDescription="Foto de perfil"
+            app:tint="@color/white"
+            android:scaleType="centerCrop"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="4dp"
+            android:layout_marginBottom="20dp"/>
 
-            <!-- Contenedor de campos de formulario -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+        <!-- Usuario -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre de usuario"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Este nombre será visible en tu perfil"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp"/>
+        <EditText
+            android:id="@+id/etUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: juan123"
+            android:background="@drawable/edittext_border"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/grey"
+            android:padding="10dp"
+            android:layout_marginBottom="16dp"/>
 
-                <!-- Usuario -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:errorEnabled="true">
+        <!-- Email -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Correo electrónico"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Servira para iniciar sesión"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp"/>
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ej: ejemplo@correo.com"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/edittext_border"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/grey"
+            android:padding="10dp"
+            android:layout_marginBottom="16dp"/>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Nombre de usuario"
-                        android:inputType="text"
-                        android:maxLines="1"/>
-                </com.google.android.material.textfield.TextInputLayout>
+        <!-- Contraseña -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contraseña"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Debe tener mínimo 6 caracteres"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp"/>
+        <EditText
+            android:id="@+id/etPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="••••••••"
+            android:inputType="textPassword"
+            android:background="@drawable/edittext_border"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/grey"
+            android:padding="10dp"
+            android:layout_marginBottom="16dp"/>
 
-                <!-- Email -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:errorEnabled="true">
+        <!-- Confirmar contraseña -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirmar contraseña"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:layout_marginBottom="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Debe coincidir con la anterior"
+            android:textColor="@color/grey"
+            android:textSize="12sp"
+            android:layout_marginBottom="4dp"/>
+        <EditText
+            android:id="@+id/etConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="••••••••"
+            android:inputType="textPassword"
+            android:background="@drawable/edittext_border"
+            android:textColor="@android:color/white"
+            android:textColorHint="@color/grey"
+            android:padding="10dp"
+            android:layout_marginBottom="24dp"/>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etEmail"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Email"
-                        android:inputType="textEmailAddress"
-                        android:maxLines="1"/>
-                </com.google.android.material.textfield.TextInputLayout>
+        <!-- Botón Registrar -->
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registrarse"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/orange"
+            android:textAllCaps="false"
+            android:layout_marginBottom="16dp"/>
 
-                <!-- Contraseña -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:errorEnabled="true"
-                    app:passwordToggleEnabled="true">
+        <!-- Enlace a login -->
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="¿Ya tienes cuenta? Inicia sesión"
+            android:gravity="center"
+            android:textColor="@color/lightblue"
+            android:textStyle="bold"
+            android:padding="8dp"/>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Contraseña"
-                        android:inputType="textPassword"
-                        android:maxLines="1"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Confirmar Contraseña -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    app:errorEnabled="true"
-                    app:passwordToggleEnabled="true">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etConfirmPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Confirmar Contraseña"
-                        android:inputType="textPassword"
-                        android:maxLines="1"/>
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Botón de Registro -->
-                <Button
-                    android:id="@+id/btnRegister"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Registrarse"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@color/orange"
-                    android:textAllCaps="false"
-                    android:layout_marginBottom="16dp"/>
-
-                <!-- Enlace a Login -->
-                <TextView
-                    android:id="@+id/tvLogin"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="¿Ya tienes cuenta? Inicia sesión"
-                    android:gravity="center"
-                    android:textColor="@color/lightblue"
-                    android:textStyle="bold"
-                    android:padding="8dp"/>
-
-                <!-- ProgressBar -->
-                <ProgressBar
-                    android:id="@+id/progressBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@color/black"
-                    app:tint="@color/white"
-                    android:layout_gravity="center"
-                    android:visibility="gone"/>
-            </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
-</LinearLayout>
+        <!-- ProgressBar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            app:tint="@color/white"
+            android:layout_gravity="center"
+            android:visibility="gone"/>
+    </LinearLayout>
+</ScrollView>
