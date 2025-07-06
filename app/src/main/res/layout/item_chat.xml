@@ -1,40 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_margin="8dp"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="?attr/selectableItemBackground">
+    android:background="@drawable/bg_rounded_white"
+    android:padding="12dp">
 
-    <!-- Contenedor principal -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
-        <!-- Imagen de perfil circular con Glide -->
-        <ImageView
-            android:id="@+id/ivProfile"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:scaleType="centerCrop"/>
+    <!-- Imagen de perfil circular -->
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:gravity="center"
+            android:layout_marginStart="12dp">
 
-            <TextView
-                android:id="@+id/tvUsername"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:orientation="horizontal">
 
-            <!-- Contenedor para el último mensaje y el indicador de propiedad -->
+                <TextView
+                    android:id="@+id/tvUsername"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textSize="16sp"
+                    android:textStyle="bold"/>
+
+                <!-- NUEVO: Título del Post -->
+                <TextView
+                    android:id="@+id/tvPostTitle"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textSize="16sp"
+                    android:textColor="#666"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:textAlignment="viewEnd"/>
+
+            </LinearLayout>
+            <!-- Contenedor para último mensaje y hora/fecha -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -42,14 +61,12 @@
                 android:gravity="center_vertical"
                 android:layout_marginTop="4dp">
 
-                <!-- Indicador de "Tú:" si el mensaje es del usuario actual -->
                 <TextView
                     android:id="@+id/tvSenderIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tú: "
                     android:textSize="14sp"
-                    android:textColor="#80000000"
                     android:visibility="gone"/>
 
                 <TextView
@@ -59,18 +76,17 @@
                     android:layout_weight="1"
                     android:textSize="14sp"
                     android:maxLines="1"
-                    android:ellipsize="end"
-                    android:textColor="#80000000"/>
+                    android:ellipsize="end"/>
+
+                <!-- NUEVO: Timestamp -->
+                <TextView
+                    android:id="@+id/tvTimestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="#999"
+                    android:layout_marginStart="8dp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
-
-    <!-- Divisor (visible para todos excepto el último) -->
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1.5dp"
-        android:background="#E0E0E0"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"/>
 </LinearLayout>

@@ -22,7 +22,8 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.75"
-        android:background="@color/grey"
+        android:background="@drawable/border_rounded_chat"
+        android:backgroundTint="@color/white"
         android:orientation="vertical"
         android:gravity="start">
 

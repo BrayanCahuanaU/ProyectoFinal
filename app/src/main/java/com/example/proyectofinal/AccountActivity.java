@@ -41,6 +41,8 @@ public class AccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account);
 
         // Inicializar vistas
+        TextView titleText = findViewById(R.id.title_text);
+        titleText.setText("Mi Cuenta");
         tvUser = findViewById(R.id.tvAccUsername);
         tvEmail = findViewById(R.id.tvAccEmail);
         tvCreatedAt = findViewById(R.id.tvAccCreatedAt);

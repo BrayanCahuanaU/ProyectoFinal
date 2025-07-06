@@ -55,6 +55,7 @@ dependencies {
     implementation("com.github.parse-community.Parse-SDK-Android:parse:1.26.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation ("com.google.android.material:material:1.12.0")
 
 
 }

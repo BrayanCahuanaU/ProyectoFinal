@@ -54,8 +54,7 @@ public class MainActivity extends AppCompatActivity {
         rvPosts.setLayoutManager(new GridLayoutManager(this, 2));
         rvPosts.setAdapter(adapter);
 
-        // 2) Carga inicial de posts
-        loadPosts(null);
+
 
         // 3) Configuración del SearchView
         svPosts.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -76,7 +75,10 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.OnItemSelectedListener spinnerListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                loadPosts(svPosts.getQuery().toString());
+                String current = svPosts.getQuery() != null
+                        ? svPosts.getQuery().toString()
+                        : "";
+                loadPosts(current);
             }
 
             @Override
@@ -87,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
         spPrice.setOnItemSelectedListener(spinnerListener);
         spRating.setOnItemSelectedListener(spinnerListener);
         spSort.setOnItemSelectedListener(spinnerListener);
+
+        // 2) Carga inicial de posts
+        loadPosts(null);
 
         // 5) Listeners para los botones inferiores
         btnNewPost.setOnClickListener(v -> {
@@ -121,7 +126,9 @@ public class MainActivity extends AppCompatActivity {
         // --- APLICAR FILTROS ---
 
         // Filtro de precio
-        String priceSel = spPrice.getSelectedItem().toString();
+        String priceSel = (spPrice.getSelectedItem() != null)
+                ? spPrice.getSelectedItem().toString()
+                : "Todos";
         switch (priceSel) {
             case "0 - 50":
                 mainQuery.whereGreaterThanOrEqualTo("price", 0)

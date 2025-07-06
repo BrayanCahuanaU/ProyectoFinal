@@ -4,6 +4,7 @@
     <corners android:radius="16dp" /> <!-- Radio de esquina redondeada -->
     <stroke
         android:width="1dp"
-        android:color="@android:color/white" /> <!-- Color del borde -->
+        android:color="@color/white" /> <!-- Color del borde -->
+
     <solid android:color="@android:color/transparent" /> <!-- Fondo transparente -->
 </shape>

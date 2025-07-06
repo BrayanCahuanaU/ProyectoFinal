@@ -8,7 +8,23 @@
     android:background="@android:color/black"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="35dp"
+        android:text="Bienvenido, usuario 🌟"
+        android:textSize="25dp"
+        android:textColor="@color/white"/>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="5dp"
+        android:text="¿Que buscaras hoy?"
+        android:textSize="15dp"
+        android:textColor="@color/grey"/>
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/svPosts"
@@ -17,49 +33,55 @@
         android:iconifiedByDefault="false"
         android:queryHint="Buscar posts..."
         android:background="@drawable/search_bg"
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginHorizontal="10dp"
-        />
+        android:layout_marginVertical="15dp"
+        android:layout_marginHorizontal="10dp"/>
 
+    <!-- Contenedor de filtros modificado -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="10dp"
+        android:paddingHorizontal="10dp"
         android:weightSum="3"
-
+        android:layout_marginVertical="10dp"
         android:gravity="center">
 
-        <!-- Filtro precio -->
         <Spinner
             android:id="@+id/spPriceRange"
-            android:background="@drawable/spinner_border"
-            android:popupBackground="@android:color/black"
-            android:spinnerMode="dropdown"
-            android:layout_width="wrap_content"
+            android:paddingVertical="3dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:entries="@array/price_ranges" />
+            android:layout_weight="1"
+            android:entries="@array/price_ranges"
+            android:background="@drawable/spinner_border"
+            android:theme="@style/WhiteSpinnerText"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            android:layout_marginHorizontal="5dp"/>
 
-        <!-- Filtro rating -->
         <Spinner
             android:id="@+id/spMinRating"
-            android:background="@drawable/spinner_border"
-            android:popupBackground="@android:color/black"
-            android:layout_width="wrap_content"
+            android:paddingVertical="3dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:entries="@array/min_ratings" />
+            android:layout_weight="1"
+            android:background="@drawable/spinner_border"
+            android:entries="@array/min_ratings"
+            android:theme="@style/WhiteSpinnerText"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            android:layout_marginHorizontal="5dp"/>
 
-        <!-- Orden -->
         <Spinner
             android:id="@+id/spSort"
-            android:background="@drawable/spinner_border"
-            android:popupBackground="@android:color/black"
-            android:layout_width="wrap_content"
+            android:paddingVertical="3dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:entries="@array/sort_options" />
+            android:layout_weight="1"
+            android:background="@drawable/spinner_border"
+            android:theme="@style/WhiteSpinnerText"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+            android:entries="@array/sort_options"
+            android:layout_marginHorizontal="5dp"/>
     </LinearLayout>
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPosts"
@@ -67,57 +89,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="8dp"
-        tools:listitem="@layout/item_post" />
+        tools:listitem="@layout/item_post"/>
 
-    <!-- Botones en la misma fila -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:gravity="center"
-        android:padding="5dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="10dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:iconPadding="0dp"
-            app:iconGravity="top"
-            app:icon="@drawable/cuenta"
-            app:backgroundTint="@color/black"
-            android:text="cuenta"
-            android:layout_margin="10dp"
-            android:textColor="@android:color/white"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNewPost"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            app:iconPadding="0dp"
-            app:iconGravity="top"
-            android:translationY="-10dp"
-            android:layout_margin="10dp"
-            android:text="subir"
-            app:icon="@drawable/agregar"
-            app:backgroundTint="@color/orange"
-            android:textColor="@android:color/white"
-            />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnChats"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:iconPadding="0dp"
-            app:iconGravity="top"
-            app:icon="@drawable/chat"
-            app:backgroundTint="@color/black"
-            android:text="chats"
-            android:layout_margin="10dp"
-            android:textColor="@android:color/white"/>
-
-    </LinearLayout>
-
+    <include layout="@layout/bottom_nav_buttons"/>
 </LinearLayout>
-

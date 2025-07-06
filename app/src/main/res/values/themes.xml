@@ -5,7 +5,12 @@
         <item name="android:windowTranslucentStatus">true</item>
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <item name="android:spinnerStyle">@style/WhiteSpinner</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorControlNormal">@color/white</item>
     </style>
 
     <style name="Theme.ProyectoFinal" parent="Base.Theme.ProyectoFinal" />
+
 </resources>

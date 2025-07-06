@@ -11,7 +11,8 @@
         android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.75"
-        android:background="@color/blue"
+        android:background="@drawable/border_rounded_chat"
+        android:backgroundTint="@color/orange"
         android:orientation="vertical"
         android:gravity="end">
 

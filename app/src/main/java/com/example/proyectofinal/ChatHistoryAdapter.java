@@ -12,9 +12,16 @@ import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.ChatViewHolder> {
+
+
 
     public interface OnChatClickListener {
         void onChatClick(ParseUser user, Message lastMessage);
@@ -74,11 +81,39 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
             holder.ivProfile.setImageResource(R.drawable.cuenta);
         }
 
-        // Ocultar divisor en el último elemento
-        if (position == getItemCount() - 1) {
-            holder.divider.setVisibility(View.GONE);
+        // --- NUEVO: cargar título del Post ---
+        if (lastMessage.getParseObject("post") != null) {
+            lastMessage.getParseObject("post").fetchIfNeededInBackground((obj, e) -> {
+                if (e == null && obj instanceof Post) {
+                    String title = ((Post)obj).getTitle();
+                    holder.tvPostTitle.setText(title);
+                }
+            });
         } else {
-            holder.divider.setVisibility(View.VISIBLE);
+            holder.tvPostTitle.setText("Sin Post");
+        }
+
+        // --- NUEVO: formatear timestamp ---
+        Date created = lastMessage.getCreatedAt();
+        String stamp = formatTimestamp(created);
+        holder.tvTimestamp.setText(stamp);
+
+    }
+
+    private String formatTimestamp(Date d) {
+        Calendar msgCal = Calendar.getInstance();
+        msgCal.setTime(d);
+
+        Calendar now = Calendar.getInstance();
+        boolean sameDay = now.get(Calendar.YEAR) == msgCal.get(Calendar.YEAR)
+                && now.get(Calendar.DAY_OF_YEAR) == msgCal.get(Calendar.DAY_OF_YEAR);
+
+        if (sameDay) {
+            // solo hora, e.g. "14:35"
+            return new SimpleDateFormat("HH:mm", Locale.getDefault()).format(d);
+        } else {
+            // fecha, e.g. "23/06/2025"
+            return new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(d);
         }
     }
 
@@ -92,15 +127,17 @@ public class ChatHistoryAdapter extends RecyclerView.Adapter<ChatHistoryAdapter.
         TextView tvUsername;
         TextView tvLastMessage;
         TextView tvSenderIndicator;
-        View divider;
+        TextView tvPostTitle;
+        TextView tvTimestamp;
 
         ChatViewHolder(View itemView) {
             super(itemView);
             ivProfile = itemView.findViewById(R.id.ivProfile);
             tvUsername = itemView.findViewById(R.id.tvUsername);
+            tvPostTitle = itemView.findViewById(R.id.tvPostTitle);
             tvLastMessage = itemView.findViewById(R.id.tvLastMessage);
             tvSenderIndicator = itemView.findViewById(R.id.tvSenderIndicator);
-            divider = itemView.findViewById(R.id.divider);
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
         }
     }
 }

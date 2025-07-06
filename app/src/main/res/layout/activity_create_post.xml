@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:orientation="vertical"
     android:fillViewport="true">
+
+    <include layout="@layout/title_pages"/>
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="15dp"
+        android:background="@color/black"
         android:layout_gravity="center"
+        android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -23,16 +29,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Crear nueva publicación"
-                android:textColor="@color/black"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:text="Completa las siguientes casillas para publicar tu servicio."
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="15sp"/>
         </LinearLayout>
 
@@ -59,7 +57,7 @@
                 android:layout_height="40dp"
                 android:src="@drawable/subirimagen"
                 android:scaleType="fitCenter"
-                app:tint="@color/black"/>
+                app:tint="@color/white"/>
 
             <TextView
                 android:id="@+id/tvImageCount"
@@ -67,19 +65,21 @@
                 android:layout_height="wrap_content"
                 android:text="Seleccionar Imágenes (0/5)"
                 android:textSize="16sp"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:layout_marginTop="8dp"/>
         </LinearLayout>
 
 
         <!-- Título -->
+            
             <EditText
                 android:id="@+id/etTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/edittext_border"
+                android:drawablePadding="8dp"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
+                android:paddingVertical="8dp"
                 android:layout_marginTop="8dp"
                 android:hint="Título"/>
 
@@ -89,7 +89,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
+                android:paddingVertical="8dp"
                 android:layout_marginTop="8dp"
                 android:hint="Descripción"
                 android:inputType="textMultiLine"
@@ -102,7 +102,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
+                android:paddingVertical="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_border"
                 android:hint="Precio"
@@ -114,7 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
+                android:paddingVertical="8dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/edittext_border"
                 android:hint="Horarios (ej: 9-12,14-18)" />
@@ -125,7 +125,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
+                android:paddingVertical="8dp"
                 android:background="@drawable/edittext_border"
                 android:layout_marginTop="8dp" />
 
@@ -137,7 +137,7 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="5dp"
                 android:layout_marginTop="8dp"
-                android:orientation="vertical" />
+                android:orientation="horizontal" />
 
             <!-- ProgressBar -->
             <ProgressBar
@@ -155,8 +155,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/black"
+                android:backgroundTint="@color/orange"
                 android:text="Guardar Post" />
         </LinearLayout>
     </LinearLayout>
-</ScrollView>
+
+    <include layout="@layout/bottom_nav_buttons"/>
+
+</LinearLayout>

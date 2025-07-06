@@ -3,42 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/black">
 
-    <!-- Botones en la misma fila -->
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_gravity="center"
-        android:layout_marginBottom="20dp">
 
-        <!-- Botón de volver (izquierda) -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            app:srcCompat="@drawable/volver"
-            app:backgroundTint="@color/white"
-            android:layout_margin="10dp"
-            android:textColor="@android:color/white"/>
+    <include layout="@layout/title_pages"/>
 
-        <!-- Botón Cerrar Sesión (derecha)-->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/btnAccLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            android:paddingVertical="5dp"
-            app:srcCompat="@drawable/salir"
-            app:backgroundTint="@color/white"/>
-    </RelativeLayout>
 
     <!-- Contenedor de datos de usuario - MEJORADO JERARQUÍA -->
     <LinearLayout
@@ -47,6 +18,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp"
+        android:layout_marginHorizontal="15dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -54,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Datos de tu cuenta"
+            android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
             android:drawablePadding="8dp"
@@ -70,14 +43,14 @@
             android:padding="5dp"
             android:layout_marginBottom="16dp"
             app:civ_border_width="2dp"
-            app:civ_border_color="@color/black"/>
+            app:civ_border_color="@color/black"
+            app:tint="@color/white"/>
 
         <!-- Datos de usuario con etiquetas claras -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -86,7 +59,7 @@
                 android:layout_weight="1"
                 android:text="Usuario:"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvAccUsername"
@@ -94,6 +67,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:textSize="16sp"
+                android:textColor="@color/white"
                 android:textStyle="normal"/>
         </LinearLayout>
 
@@ -101,7 +75,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -110,13 +83,14 @@
                 android:layout_weight="1"
                 android:text="Correo:"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvAccEmail"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
+                android:textColor="@color/white"
                 android:textSize="16sp"/>
         </LinearLayout>
 
@@ -124,7 +98,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="12dp"
             android:gravity="center_vertical">
 
             <TextView
@@ -133,13 +106,14 @@
                 android:layout_weight="1"
                 android:text="Creación:"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvAccCreatedAt"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
+                android:textColor="@color/white"
                 android:textSize="16sp"/>
         </LinearLayout>
 
@@ -156,7 +130,7 @@
                 android:layout_weight="1"
                 android:text="Publicaciones:"
                 android:textStyle="bold"
-                android:textColor="?android:attr/textColorSecondary"/>
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvAccPostCount"
@@ -164,6 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:textSize="16sp"
+                android:textColor="@color/white"
                 android:textStyle="normal"/>
         </LinearLayout>
     </LinearLayout>
@@ -172,9 +147,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
         android:orientation="vertical"
         android:layout_gravity="center"
-        android:layout_marginTop="24dp"
         android:padding="16dp">
 
         <TextView
@@ -182,6 +157,7 @@
             android:layout_height="wrap_content"
             android:text="Opciones para cuenta"
             android:textSize="20sp"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
@@ -209,6 +185,19 @@
                 android:text="Editar Cuenta"
                 android:textColor="@android:color/white"/>
 
+            <!-- Botón Cerrar Sesión (derecha)-->
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/btnAccLogout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginHorizontal="10dp"
+                android:paddingVertical="5dp"
+                app:srcCompat="@drawable/salir"
+                app:tint="@color/red"
+                app:backgroundTint="@color/black"/>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDeleteAccount"
                 android:layout_width="0dp"
@@ -228,8 +217,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="15dp"
         android:orientation="vertical"
-        android:layout_marginTop="24dp"
         android:padding="16dp">
 
         <TextView
@@ -240,6 +229,7 @@
             android:textStyle="bold"
             android:drawablePadding="8dp"
             android:gravity="center_vertical"
+            android:textColor="@color/white"
             android:layout_marginBottom="16dp"/>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -247,8 +237,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:padding="4dp"
             tools:listitem="@layout/item_post"
             tools:showIn="@layout/activity_account" />
     </LinearLayout>
+    <include layout="@layout/bottom_nav_buttons"/>
+
 </LinearLayout>

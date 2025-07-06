@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
-    android:background="@android:color/white">
+    android:background="@color/black">
 
     <TextView
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:text="Registrar Cuenta"
         android:textSize="20dp"
         android:gravity="center"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:padding="8dp"/>
 
@@ -38,6 +38,7 @@
                 android:layout_gravity="center"
                 android:src="@drawable/subirimagen"
                 android:contentDescription="Foto de perfil"
+                app:tint="@color/white"
                 android:scaleType="centerCrop"
                 android:clickable="true"
                 android:focusable="true"
@@ -125,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:text="Registrarse"
                     android:textColor="@android:color/white"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/orange"
                     android:textAllCaps="false"
                     android:layout_marginBottom="16dp"/>
 
@@ -136,7 +137,7 @@
                     android:layout_height="wrap_content"
                     android:text="¿Ya tienes cuenta? Inicia sesión"
                     android:gravity="center"
-                    android:textColor="@color/black"
+                    android:textColor="@color/lightblue"
                     android:textStyle="bold"
                     android:padding="8dp"/>
 
@@ -145,6 +146,8 @@
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@color/black"
+                    app:tint="@color/white"
                     android:layout_gravity="center"
                     android:visibility="gone"/>
             </LinearLayout>
