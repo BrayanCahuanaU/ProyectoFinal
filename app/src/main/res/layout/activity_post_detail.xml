@@ -28,6 +28,7 @@
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="8dp"/>
 
         <!-- Price -->
@@ -35,6 +36,7 @@
             android:id="@+id/tvDetailPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:textSize="18sp"
             android:textColor="@color/white"
             android:layout_marginBottom="8dp"/>
@@ -43,6 +45,7 @@
         <RatingBar
             android:id="@+id/ratingBarDetail"
             style="@style/Widget.AppCompat.RatingBar.Small"
+            android:layout_marginHorizontal="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:isIndicator="true"
@@ -55,6 +58,7 @@
             android:id="@+id/tvDetailDesc"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:textColor="@color/white"
             android:layout_marginBottom="8dp"/>
 
@@ -63,6 +67,7 @@
             android:id="@+id/tvDetailSchedules"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:textColor="@color/white"
             android:layout_marginBottom="8dp"/>
 
@@ -71,6 +76,7 @@
             android:id="@+id/tvDetailCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:textColor="@color/white"
             android:layout_marginBottom="8dp"/>
 
@@ -78,6 +84,7 @@
         <TextView
             android:id="@+id/tvDetailLocations"
             android:textColor="@color/white"
+            android:layout_marginHorizontal="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"/>
@@ -88,6 +95,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="8dp"
+            android:layout_marginHorizontal="16dp"
             android:gravity="center_vertical">
 
             <ImageView
@@ -112,6 +120,7 @@
             android:id="@+id/btnContact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
             android:text="Contactar"
             android:backgroundTint="@color/orange"
             android:layout_marginTop="8dp"/>

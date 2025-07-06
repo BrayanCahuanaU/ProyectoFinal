@@ -1,165 +1,313 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:fillViewport="true">
+    android:background="@color/black">
 
-    <include layout="@layout/title_pages"/>
+    <!-- Cabecera -->
+    <include layout="@layout/title_pages" />
 
-
-    <LinearLayout
+    <!-- Contenido desplazable -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="15dp"
-        android:background="@color/black"
-        android:layout_gravity="center"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:fillViewport="true"
+        android:padding="15dp">
 
-        <!-- Sección de título -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="16dp">
+            android:gravity="center"
+            android:orientation="vertical">
 
+
+            <!-- Título para imágenes -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Completa las siguientes casillas para publicar tu servicio."
+                android:text="Imágenes del servicio"
                 android:textColor="@color/white"
-                android:textSize="15sp"/>
-        </LinearLayout>
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"/>
 
-        <!-- Formulario -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            <!-- Mensaje adicional para imágenes -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Selecciona hasta 5 fotos que muestren tu servicio (primera foto será la principal)"
+                android:textColor="@color/grey"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"/>
 
-            <!-- Picker de imágenes - BOTÓN MEJORADO -->
+            <!-- Selector de imágenes -->
             <LinearLayout
                 android:id="@+id/btnPickImages"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
-                android:minHeight="100dp"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="@color/blur_background"
                 android:gravity="center"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:backgroundTint="@color/white">
+                android:layout_marginBottom="16dp">
 
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@drawable/subirimagen"
-                android:scaleType="fitCenter"
-                app:tint="@color/white"/>
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    app:srcCompat="@drawable/subirimagen"
+                    app:tint="@color/white"/>
 
+                <TextView
+                    android:id="@+id/tvImageCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Seleccionar Imágenes (0/5)"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    android:layout_marginTop="8dp"/>
+            </LinearLayout>
+
+            <!-- Título para campo de título -->
             <TextView
-                android:id="@+id/tvImageCount"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Seleccionar Imágenes (0/5)"
-                android:textSize="16sp"
+                android:text="Título del servicio"
                 android:textColor="@color/white"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"/>
 
+            <!-- Mensaje adicional para título -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Un título claro y descriptivo atrae más clientes"
+                android:textColor="@color/grey"
+                android:textSize="12sp"
+                android:layout_marginBottom="4dp"/>
 
-        <!-- Título -->
-            
+            <!-- Campo Título -->
             <EditText
                 android:id="@+id/etTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="Ej: Fotógrafo profesional para eventos"
                 android:background="@drawable/edittext_border"
-                android:drawablePadding="8dp"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="8dp"
-                android:layout_marginTop="8dp"
-                android:hint="Título"/>
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"/>
 
-            <!-- Descripción -->
+            <!-- Título para descripción -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Descripción detallada"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Mensaje adicional para descripción -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Explica en qué consiste tu servicio y qué incluye"
+                android:textColor="@color/grey"
+                android:textSize="12sp"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Campo Descripción -->
             <EditText
                 android:id="@+id/etDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="8dp"
-                android:layout_marginTop="8dp"
-                android:hint="Descripción"
+                android:hint="Detalla tu servicio..."
                 android:inputType="textMultiLine"
+                android:lines="4"
                 android:background="@drawable/edittext_border"
-                android:lines="4" />
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"/>
 
-            <!-- Precio -->
+            <!-- Título para precio -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Precio del servicio"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Mensaje adicional para precio -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Indica el precio en soles (S/.)"
+                android:textColor="@color/grey"
+                android:textSize="12sp"
+                android:layout_marginBottom="4dp"/>
+
+            <!-- Campo Precio -->
             <EditText
                 android:id="@+id/etPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="8dp"
-                android:layout_marginTop="8dp"
+                android:hint="Ej: 500.00"
+                android:inputType="numberDecimal"
                 android:background="@drawable/edittext_border"
-                android:hint="Precio"
-                android:inputType="numberDecimal" />
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"/>
 
-            <!-- Horarios -->
-            <EditText
-                android:id="@+id/etSchedules"
+            <!-- Título para selectores -->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/edittext_border"
-                android:hint="Horarios (ej: 9-12,14-18)" />
+                android:text="Información adicional"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"/>
 
-            <!-- Categoría -->
-            <Spinner
-                android:id="@+id/spinnerCategory"
+            <!-- Fila: Región | Categoría | Horarios -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="8dp"
-                android:background="@drawable/edittext_border"
-                android:layout_marginTop="8dp" />
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginBottom="16dp">
 
-            <!-- Ubicaciones -->
+                <!-- Región -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Región"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerRegion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_border"
+                        android:padding="8dp"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@color/grey"/>
+                </LinearLayout>
+
+                <!-- Categoría -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Categoría"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerCategory"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_border"
+                        android:padding="8dp"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@color/grey"/>
+                </LinearLayout>
+
+                <!-- Horarios -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Horarios"
+                        android:textColor="@color/grey"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="4dp"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerSchedules"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_border"
+                        android:padding="8dp"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="@color/grey"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Ubicaciones (checkboxes) -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ubicaciones disponibles"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Selecciona las zonas donde ofreces tu servicio"
+                android:textColor="@color/grey"
+                android:textSize="12sp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"/>
+
             <LinearLayout
                 android:id="@+id/layoutLocations"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="5dp"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal" />
+                android:orientation="vertical"
+                android:padding="8dp"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"/>
 
             <!-- ProgressBar -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:visibility="gone"/>
+                android:layout_marginBottom="16dp"/>
 
-            <!-- Botón de guardar -->
+            <!-- Botón Guardar -->
             <Button
                 android:id="@+id/btnSavePost"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:text="Guardar Post"
                 android:backgroundTint="@color/orange"
-                android:text="Guardar Post" />
+                android:textColor="@android:color/white"
+                android:layout_marginTop="8dp"/>
+
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 
+    <!-- Navegación inferior -->
     <include layout="@layout/bottom_nav_buttons"/>
-
 </LinearLayout>

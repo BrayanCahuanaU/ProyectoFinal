@@ -1,150 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/black">
 
-    <!-- Include FUERA del contenedor desplazable (fijo en la parte superior) -->
+    <!-- Cabecera -->
     <include layout="@layout/title_pages" />
 
-
-    <RelativeLayout
+    <!-- Contenido -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/black"
-        android:layout_gravity="center"
-        android:paddingVertical="15dp"
-        android:paddingHorizontal="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:fillViewport="true">
 
-        <!-- Contenido organizado con relaciones -->
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/ivEditProfile"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/cuenta"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="16dp"
-            app:civ_border_width="2dp"
-            app:civ_border_color="@color/white"
-            app:tint="@color/white"/>
-
-        <Button
-            android:id="@+id/btnChangePhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cambiar Foto"
-            android:layout_below="@id/ivEditProfile"
-            android:layout_centerHorizontal="true"
-            android:backgroundTint="@color/orange"
-            android:layout_marginBottom="24dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/usernameLayout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Usuario"
-            android:layout_below="@id/btnChangePhoto"
-            android:layout_marginBottom="16dp">
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEditUsername"
-                android:textColor="@color/white"
+            <!-- Foto de perfil y cambiar -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/ivEditProfile"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:layout_gravity="center"
+                android:src="@drawable/cuenta"
+                app:civ_border_width="2dp"
+                app:civ_border_color="@color/white"
+                app:tint="@color/white" />
+
+            <Button
+                android:id="@+id/btnChangePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cambiar foto"
+                android:layout_gravity="center"
+                android:layout_marginTop="8dp"
+                android:backgroundTint="@color/orange"
+                android:textColor="@android:color/white" />
+
+            <!-- Usuario -->
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="wrap_content"
+                android:text="Usuario"
+                android:textColor="@color/grey"
+                android:layout_marginTop="16dp"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/emailLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Correo Electrónico"
-            android:layout_below="@id/usernameLayout"
-            android:layout_marginBottom="16dp">
+            <EditText
+                android:id="@+id/etEditUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre de usuario"
+                android:background="@drawable/edittext_border"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="12dp"/>
 
-            <com.google.android.material.textfield.TextInputEditText
+            <!-- Correo -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Correo electrónico"
+                android:textColor="@color/grey"/>
+
+            <EditText
                 android:id="@+id/etEditEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="ejemplo@correo.com"
+                android:inputType="textEmailAddress"
+                android:background="@drawable/edittext_border"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"/>
 
-        <!-- Sección para cambiar contraseña -->
-        <TextView
-            android:id="@+id/passwordTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Cambiar Contraseña"
-            android:textStyle="bold"
-            android:layout_below="@id/emailLayout"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"/>
+            <!-- Cambiar contraseña -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cambiar contraseña"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/currentPasswordLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Contraseña Actual"
-            app:passwordToggleEnabled="true"
-            android:layout_below="@id/passwordTitle"
-            android:layout_marginBottom="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/etCurrentPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Contraseña actual"
+                android:inputType="textPassword"
+                android:background="@drawable/edittext_border"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="12dp"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/newPasswordLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nueva Contraseña"
-            app:passwordToggleEnabled="true"
-            android:layout_below="@id/currentPasswordLayout"
-            android:layout_marginBottom="16dp">
-
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/etNewPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Nueva contraseña"
+                android:inputType="textPassword"
+                android:background="@drawable/edittext_border"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="12dp"/>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/confirmPasswordLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Confirmar Nueva Contraseña"
-            app:passwordToggleEnabled="true"
-            android:layout_below="@id/newPasswordLayout"
-            android:layout_marginBottom="24dp">
-
-            <com.google.android.material.textfield.TextInputEditText
+            <EditText
                 android:id="@+id/etConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPassword"/>
-        </com.google.android.material.textfield.TextInputLayout>
+                android:hint="Confirmar contraseña"
+                android:inputType="textPassword"
+                android:background="@drawable/edittext_border"
+                android:textColor="@android:color/white"
+                android:textColorHint="@color/grey"
+                android:padding="10dp"
+                android:layout_marginBottom="16dp"/>
 
-        <Button
-            android:id="@+id/btnSaveAccount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Guardar Cambios"
-            android:layout_below="@id/confirmPasswordLayout"
-            android:backgroundTint="@color/orange" />
+            <!-- Guardar cambios -->
+            <Button
+                android:id="@+id/btnSaveAccount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Guardar cambios"
+                android:backgroundTint="@color/orange"
+                android:textColor="@android:color/white" />
 
-        <ProgressBar
-            android:id="@+id/pbEditProgress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_below="@id/btnSaveAccount"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp" />
+            <ProgressBar
+                android:id="@+id/pbEditProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"/>
 
-    </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Navegación inferior -->
+    <include layout="@layout/bottom_nav_buttons"/>
+
 </LinearLayout>

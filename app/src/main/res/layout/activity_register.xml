@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center_vertical"
+    android:layout_gravity="center"
+    android:paddingVertical="20dp"
     android:background="@color/black">
 
     <TextView
@@ -17,11 +19,9 @@
         android:textStyle="bold"
         android:padding="8dp"/>
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:fillViewport="true">
+        android:layout_height="wrap_content">
 
         <!-- Contenedor único para todo el contenido desplazable -->
         <LinearLayout
@@ -152,5 +152,5 @@
                     android:visibility="gone"/>
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </RelativeLayout>
 </LinearLayout>

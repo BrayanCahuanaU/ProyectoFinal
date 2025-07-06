@@ -15,7 +15,7 @@ import java.util.List;
 
 public class PostDetailActivity extends AppCompatActivity {
     private ViewPager vpImages;
-    private TextView tvTitle, tvDesc, tvPrice, tvSchedules, tvCategory, tvLocations, tvUser;
+    private TextView tvTitle, tvDesc, tvPrice, tvSchedules, tvCategory, tvLocations, tvUser, titleText;
     private RatingBar ratingBar;
     private Button btnContact;
     private ImageButton btnBack;
@@ -31,6 +31,8 @@ public class PostDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_post_detail);
 
         // 1) Vincular vistas
+
+        titleText = findViewById(R.id.title_text);
         vpImages      = findViewById(R.id.vpImages);
         tvTitle       = findViewById(R.id.tvDetailTitle);
         tvDesc        = findViewById(R.id.tvDetailDesc);
@@ -43,6 +45,7 @@ public class PostDetailActivity extends AppCompatActivity {
         btnBack       = findViewById(R.id.btnBack);
         tvUser        = findViewById(R.id.tvUser);
         ivUserProfile = findViewById(R.id.ivUserProfile);
+
 
         // Cargar el post
         String postId = getIntent().getStringExtra("postId");
@@ -64,6 +67,8 @@ public class PostDetailActivity extends AppCompatActivity {
             }
 
             currentPost = post;
+
+            String postTitle = post.getTitle();
             // Rellenar datos
             tvTitle.setText(post.getTitle());
             tvDesc.setText(post.getDescription());
@@ -72,6 +77,9 @@ public class PostDetailActivity extends AppCompatActivity {
             tvCategory.setText("Categoría: " + post.getCategory());
             tvLocations.setText("Ubicaciones: " + String.join(", ", post.getLocations()));
             ratingBar.setRating(post.getRating().floatValue());
+
+            titleText.setText(postTitle);
+
 
             // Imágenes del post
             List<String> urls = new ArrayList<>();

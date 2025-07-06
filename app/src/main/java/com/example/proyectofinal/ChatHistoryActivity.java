@@ -3,18 +3,21 @@ package com.example.proyectofinal;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.button.MaterialButton;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,9 @@ public class ChatHistoryActivity extends AppCompatActivity {
     }
 
     private RecyclerView rvChats;
+    private TextView titleText;
+    private ImageButton btnBack;
+    private MaterialButton btnAccount, btnNewPost, btnChats;
     private ChatHistoryAdapter adapter;
     private String currentUserId;
 
@@ -48,105 +54,113 @@ public class ChatHistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_history);
 
-        rvChats = findViewById(R.id.rvChats);
+        // 1) Vincular vistas
+        rvChats     = findViewById(R.id.rvChats);
+        titleText   = findViewById(R.id.title_text);
+        btnBack     = findViewById(R.id.btnBack);
+        btnAccount  = findViewById(R.id.btnAccount);
+        btnNewPost  = findViewById(R.id.btnNewPost);
+        btnChats    = findViewById(R.id.btnChats);
 
-        // Obtener ID del usuario actual
+        // 2) Texto del título y comportamiento del botón de volver
+        titleText.setText("Chats");
+        btnBack.setOnClickListener(v -> finish());
+
+        // 3) Bottom navigation
+        btnAccount.setOnClickListener(v -> {
+            Intent i = new Intent(this, AccountActivity.class);
+            startActivity(i);
+        });
+        btnNewPost.setOnClickListener(v -> {
+            Intent i = new Intent(this, CreatePostActivity.class);
+            startActivity(i);
+        });
+        btnChats.setOnClickListener(v -> {
+            // Si queremos recargar la pantalla actual:
+            recreate();
+        });
+
+        // 4) Preparar RecyclerView
         ParseUser currentUser = ParseUser.getCurrentUser();
         currentUserId = currentUser != null ? currentUser.getObjectId() : "";
-
         adapter = new ChatHistoryAdapter(this::openChat, currentUserId);
         rvChats.setAdapter(adapter);
         rvChats.setLayoutManager(new LinearLayoutManager(this));
 
+        // 5) Cargar conversaciones
         loadChats();
     }
 
     private void loadChats() {
         if (currentUserId.isEmpty()) return;
 
+        // Consultas “from” y “to” para el usuario actual
         ParseQuery<Message> q1 = ParseQuery.getQuery(Message.class)
                 .whereEqualTo("fromUser", ParseUser.createWithoutData(ParseUser.class, currentUserId));
-
         ParseQuery<Message> q2 = ParseQuery.getQuery(Message.class)
-                .whereEqualTo("toUser", ParseUser.createWithoutData(ParseUser.class, currentUserId));
+                .whereEqualTo("toUser",   ParseUser.createWithoutData(ParseUser.class, currentUserId));
 
-        List<ParseQuery<Message>> queries = new ArrayList<>();
-        queries.add(q1);
-        queries.add(q2);
+        ParseQuery.or(List.of(q1, q2))
+                .include("fromUser")
+                .include("toUser")
+                .orderByDescending("createdAt")
+                .findInBackground((messages, e) -> {
+                    if (e != null) return;
 
-        ParseQuery<Message> mainQuery = ParseQuery.or(queries);
-        mainQuery.include("fromUser");
-        mainQuery.include("toUser");
-        mainQuery.orderByDescending("createdAt");
+                    Map<String, ChatConversation> convoMap = new HashMap<>();
+                    List<String> otherIds = new ArrayList<>();
 
-        mainQuery.findInBackground((messages, e) -> {
-            if (e != null) {
-                // Manejar error
-                return;
-            }
+                    for (Message msg : messages) {
+                        String fromId = msg.getFromUser().getObjectId();
+                        String toId   = msg.getToUser().getObjectId();
+                        String otherId = fromId.equals(currentUserId) ? toId : fromId;
 
-            Map<String, ChatConversation> conversationMap = new HashMap<>();
-            List<String> otherUserIds = new ArrayList<>();
-
-            for (Message message : messages) {
-                String fromId = message.getFromUser().getObjectId();
-                String toId = message.getToUser().getObjectId();
-                String otherId = fromId.equals(currentUserId) ? toId : fromId;
-
-                // Solo considerar usuarios diferentes al actual
-                if (!otherId.equals(currentUserId)) {
-                    if (!conversationMap.containsKey(otherId)) {
-                        otherUserIds.add(otherId);
-                        conversationMap.put(otherId, new ChatConversation(
-                                fromId.equals(currentUserId) ? message.getToUser() : message.getFromUser(),
-                                message
-                        ));
-                    } else {
-                        // Actualizar si el mensaje es más reciente
-                        ChatConversation existing = conversationMap.get(otherId);
-                        if (message.getCreatedAt().after(existing.getLastMessage().getCreatedAt())) {
-                            conversationMap.put(otherId, new ChatConversation(
-                                    existing.getOtherUser(),
-                                    message
-                            ));
-                        }
-                    }
-                }
-            }
-
-            // Si no hay conversaciones
-            if (otherUserIds.isEmpty()) {
-                adapter.setConversations(new ArrayList<>());
-                return;
-            }
-
-            // Obtener detalles completos de los otros usuarios
-            ParseQuery<ParseUser> userQuery = ParseUser.getQuery();
-            userQuery.whereContainedIn("objectId", otherUserIds);
-            userQuery.findInBackground((users, ex) -> {
-                if (ex == null && users != null) {
-                    List<ChatConversation> conversations = new ArrayList<>();
-                    for (ParseUser user : users) {
-                        ChatConversation conv = conversationMap.get(user.getObjectId());
-                        if (conv != null) {
-                            conversations.add(conv);
+                        if (!otherId.equals(currentUserId)) {
+                            if (!convoMap.containsKey(otherId)) {
+                                otherIds.add(otherId);
+                                ParseUser otherUser = fromId.equals(currentUserId)
+                                        ? msg.getToUser()
+                                        : msg.getFromUser();
+                                convoMap.put(otherId, new ChatConversation(otherUser, msg));
+                            } else {
+                                ChatConversation existing = convoMap.get(otherId);
+                                if (msg.getCreatedAt().after(existing.getLastMessage().getCreatedAt())) {
+                                    convoMap.put(otherId, new ChatConversation(
+                                            existing.getOtherUser(), msg
+                                    ));
+                                }
+                            }
                         }
                     }
 
-                    // Ordenar por fecha del último mensaje (más reciente primero)
-                    Collections.sort(conversations, (c1, c2) ->
-                            c2.getLastMessage().getCreatedAt().compareTo(c1.getLastMessage().getCreatedAt()));
+                    if (otherIds.isEmpty()) {
+                        adapter.setConversations(new ArrayList<>());
+                        return;
+                    }
 
-                    adapter.setConversations(conversations);
-                }
-            });
-        });
+                    // Obtener datos completos de cada otro usuario
+                    ParseQuery<ParseUser> userQ = ParseUser.getQuery()
+                            .whereContainedIn("objectId", otherIds);
+                    userQ.findInBackground((users, ex) -> {
+                        if (ex == null && users != null) {
+                            List<ChatConversation> list = new ArrayList<>();
+                            for (ParseUser u : users) {
+                                ChatConversation conv = convoMap.get(u.getObjectId());
+                                if (conv != null) list.add(conv);
+                            }
+                            // Ordenar por fecha de último mensaje
+                            Collections.sort(list, (c1, c2) ->
+                                    c2.getLastMessage().getCreatedAt()
+                                            .compareTo(c1.getLastMessage().getCreatedAt()));
+                            adapter.setConversations(list);
+                        }
+                    });
+                });
     }
 
     private void openChat(ParseUser user, Message lastMessage) {
         Intent intent = new Intent(this, ChatActivity.class);
         intent.putExtra("receiverId", user.getObjectId());
-        // Obtén el postId desde el último mensaje
         intent.putExtra("postId", lastMessage.getParseObject("post").getObjectId());
         startActivity(intent);
     }

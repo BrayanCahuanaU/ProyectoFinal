@@ -2,30 +2,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/black"
     tools:context=".MainActivity">
 
+    <!-- Saludo personalizado -->
     <TextView
+        android:id="@+id/tvWelcome"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="35dp"
-        android:text="Bienvenido, usuario 🌟"
-        android:textSize="25dp"
-        android:textColor="@color/white"/>
+        android:text="Bienvenido, Brayan"
+        android:textSize="25sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
 
+    <!-- Introducción a la búsqueda -->
     <TextView
+        android:id="@+id/tvSubtitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         android:layout_marginVertical="5dp"
-        android:text="¿Que buscaras hoy?"
-        android:textSize="15dp"
+        android:text="¿Qué servicio quieres buscar hoy?"
+        android:textSize="15sp"
         android:textColor="@color/grey"/>
 
+    <!-- Barra de búsqueda -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/svPosts"
         android:layout_width="match_parent"
@@ -36,7 +43,30 @@
         android:layout_marginVertical="15dp"
         android:layout_marginHorizontal="10dp"/>
 
-    <!-- Contenedor de filtros modificado -->
+    <!-- Título de sección de filtros -->
+    <TextView
+        android:id="@+id/tvFilterTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:text="Filtros"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"/>
+
+    <!-- Descripción breve de filtros -->
+    <TextView
+        android:id="@+id/tvFilterDesc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:text="Refina tu búsqueda por precio, puntuación mínima u orden."
+        android:textSize="13sp"
+        android:textColor="@color/grey"
+        android:layout_marginBottom="5dp"/>
+
+    <!-- Contenedor de filtros: Precio | Rating | Orden -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +78,6 @@
 
         <Spinner
             android:id="@+id/spPriceRange"
-            android:paddingVertical="3dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -60,29 +89,40 @@
 
         <Spinner
             android:id="@+id/spMinRating"
-            android:paddingVertical="3dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/spinner_border"
             android:entries="@array/min_ratings"
+            android:background="@drawable/spinner_border"
             android:theme="@style/WhiteSpinnerText"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
             android:layout_marginHorizontal="5dp"/>
 
         <Spinner
             android:id="@+id/spSort"
-            android:paddingVertical="3dp"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:entries="@array/sort_options"
             android:background="@drawable/spinner_border"
             android:theme="@style/WhiteSpinnerText"
             android:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
-            android:entries="@array/sort_options"
             android:layout_marginHorizontal="5dp"/>
     </LinearLayout>
 
+    <!-- Título de sección de resultados -->
+    <TextView
+        android:id="@+id/tvResultsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:text="Resultados"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Lista de posts -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvPosts"
         android:layout_width="match_parent"
@@ -91,5 +131,6 @@
         android:padding="8dp"
         tools:listitem="@layout/item_post"/>
 
+    <!-- Navegación inferior -->
     <include layout="@layout/bottom_nav_buttons"/>
 </LinearLayout>

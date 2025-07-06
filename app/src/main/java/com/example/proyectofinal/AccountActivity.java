@@ -2,7 +2,6 @@ package com.example.proyectofinal;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,44 +26,41 @@ import java.util.Locale;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class AccountActivity extends AppCompatActivity {
-    private TextView tvUser, tvEmail, tvCreatedAt, tvPostCount;
-    private CircleImageView ivProfile;
-    private FloatingActionButton btnAccLogout, btnBack;
+    // Cabecera
+    private TextView titleText, tvUser, tvEmail, tvCreatedAt, tvPostCount;
+    private FloatingActionButton btnBack, btnAccLogout;
     private MaterialButton btnEditAccount, btnDeleteAccount;
+
+    // RecyclerView mis posts
     private RecyclerView rvMyPosts;
     private PostAdapter adapter;
     private List<Post> myPosts = new ArrayList<>();
+
+    // Bottom nav
+    private MaterialButton btnAccount, btnNewPost, btnChats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        // Inicializar vistas
-        TextView titleText = findViewById(R.id.title_text);
+        // --- 1) Vincular vistas de la cabecera ---
+        titleText      = findViewById(R.id.title_text);
+        btnBack        = findViewById(R.id.btnBack);
         titleText.setText("Mi Cuenta");
-        tvUser = findViewById(R.id.tvAccUsername);
-        tvEmail = findViewById(R.id.tvAccEmail);
-        tvCreatedAt = findViewById(R.id.tvAccCreatedAt);
-        tvPostCount = findViewById(R.id.tvAccPostCount);
-        ivProfile = findViewById(R.id.ivProfile);
-        btnAccLogout = findViewById(R.id.btnAccLogout);
-        btnBack = findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v -> finish());
+
+        // --- 2) Vincular vistas de datos de usuario ---
+        tvUser         = findViewById(R.id.tvAccUsername);
+        tvEmail        = findViewById(R.id.tvAccEmail);
+        tvCreatedAt    = findViewById(R.id.tvAccCreatedAt);
+        tvPostCount    = findViewById(R.id.tvAccPostCount);
+        CircleImageView ivProfile = findViewById(R.id.ivProfile);
+
+        // --- 3) Vincular botones de acción sobre cuenta ---
+        btnAccLogout   = findViewById(R.id.btnAccLogout);
         btnEditAccount = findViewById(R.id.btnEditAccount);
         btnDeleteAccount = findViewById(R.id.btnDeleteAccount);
-        rvMyPosts = findViewById(R.id.rvMyPosts);
-
-        // Configurar RecyclerView
-        adapter = new PostAdapter(this, myPosts, true);
-        rvMyPosts.setLayoutManager(new GridLayoutManager(this, 2));
-        rvMyPosts.setAdapter(adapter);
-
-        // Cargar datos del usuario y publicaciones
-        loadUserData();
-        loadMyPosts();
-
-        // Acciones de botones
-        btnBack.setOnClickListener(v -> finish());
 
         btnAccLogout.setOnClickListener(v -> {
             ParseUser.logOut();
@@ -73,48 +69,68 @@ public class AccountActivity extends AppCompatActivity {
             startActivity(i);
             finish();
         });
+        btnEditAccount.setOnClickListener(v ->
+                startActivity(new Intent(this, EditAccountActivity.class))
+        );
+        btnDeleteAccount.setOnClickListener(v -> confirmAndDeleteAccount());
 
-        btnEditAccount.setOnClickListener(v -> {
-            // Lanzar actividad de edición de cuenta
-            startActivity(new Intent(this, EditAccountActivity.class));
+        // --- 4) RecyclerView de mis publicaciones ---
+        rvMyPosts = findViewById(R.id.rvMyPosts);
+        adapter = new PostAdapter(this, myPosts, true);
+        rvMyPosts.setLayoutManager(new GridLayoutManager(this, 2));
+        rvMyPosts.setAdapter(adapter);
+
+        // --- 5) Vincular bottom nav ---
+        btnAccount = findViewById(R.id.btnAccount);
+        btnNewPost = findViewById(R.id.btnNewPost);
+        btnChats = findViewById(R.id.btnChats);
+
+        btnAccount.setOnClickListener(v -> {
+            // Ya estamos en AccountActivity => opcional: refrescar
+            recreate();
+        });
+        btnNewPost.setOnClickListener(v -> {
+            startActivity(new Intent(this, CreatePostActivity.class));
+        });
+        btnChats.setOnClickListener(v -> {
+            startActivity(new Intent(this, ChatHistoryActivity.class));
         });
 
-        btnDeleteAccount.setOnClickListener(v -> confirmAndDeleteAccount());
+        // --- 6) Cargar datos ---
+        loadUserData(ivProfile);
+        loadMyPosts();
     }
 
-    private void loadUserData() {
+    private void loadUserData(CircleImageView ivProfile) {
         ParseUser u = ParseUser.getCurrentUser();
         if (u != null) {
             tvUser.setText(u.getUsername());
             tvEmail.setText(u.getEmail());
-
             Date createdAt = u.getCreatedAt();
             String pattern = "dd/MM/yyyy 'a las' HH:mm";
-            SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.getDefault());
-            tvCreatedAt.setText(sdf.format(createdAt));
+            tvCreatedAt.setText(new SimpleDateFormat(pattern, Locale.getDefault())
+                    .format(createdAt));
 
-            // Foto de perfil
             if (u.getParseFile("profileImage") != null) {
                 Glide.with(this)
                         .load(u.getParseFile("profileImage").getUrl())
                         .placeholder(R.drawable.cuenta)
+                        .circleCrop()
                         .into(ivProfile);
             }
         }
     }
 
     private void loadMyPosts() {
-        ParseQuery<Post> q = ParseQuery.getQuery(Post.class);
-        q.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
-        q.orderByDescending("createdAt");
+        ParseQuery<Post> q = ParseQuery.getQuery(Post.class)
+                .whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser())
+                .orderByDescending("createdAt");
         q.findInBackground((list, e) -> {
             if (e == null) {
                 myPosts.clear();
                 myPosts.addAll(list);
                 adapter.notifyDataSetChanged();
-
-                int total = list.size();
-                tvPostCount.setText(total + " publicaciones");
+                tvPostCount.setText(list.size() + " publicaciones");
             } else {
                 Toast.makeText(this, "Error cargando tus posts", Toast.LENGTH_SHORT).show();
             }
@@ -134,14 +150,14 @@ public class AccountActivity extends AppCompatActivity {
         ParseUser me = ParseUser.getCurrentUser();
         if (me == null) return;
 
-        // Borrar posts
-        ParseQuery<Post> postQuery = ParseQuery.getQuery(Post.class);
-        postQuery.whereEqualTo(Post.KEY_USER, me);
+        // 1) Eliminar posts
+        ParseQuery<Post> postQuery = ParseQuery.getQuery(Post.class)
+                .whereEqualTo(Post.KEY_USER, me);
         postQuery.findInBackground((posts, e1) -> {
             if (posts != null) {
                 for (Post p : posts) p.deleteInBackground();
             }
-            // Borrar mensajes
+            // 2) Eliminar mensajes
             ParseQuery<Message> m1 = ParseQuery.getQuery(Message.class)
                     .whereEqualTo("fromUser", me);
             ParseQuery<Message> m2 = ParseQuery.getQuery(Message.class)
@@ -151,7 +167,7 @@ public class AccountActivity extends AppCompatActivity {
                         if (msgs != null) {
                             for (Message m : msgs) m.deleteInBackground();
                         }
-                        // Borrar usuario
+                        // 3) Eliminar usuario
                         me.deleteInBackground(e3 -> {
                             if (e3 == null) {
                                 ParseUser.logOut();
