@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import androidx.appcompat.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -55,6 +56,13 @@ public class MainActivity extends AppCompatActivity {
         rvPosts.setAdapter(adapter);
 
 
+        TextView tvWelcome = findViewById(R.id.tvWelcome);
+        ParseUser current = ParseUser.getCurrentUser();
+        if (current != null && current.getUsername() != null) {
+            tvWelcome.setText("Bienvenido, " + current.getUsername());
+        } else {
+            tvWelcome.setText("Bienvenido");
+        }
 
         // 3) Configuración del SearchView
         svPosts.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
